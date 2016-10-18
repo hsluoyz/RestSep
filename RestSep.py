@@ -1,6 +1,7 @@
 # coding=gbk
 
 import re
+from pprint import pprint
 
 pattern_uuid = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
 regex_uuid = re.compile(pattern_uuid)
@@ -51,21 +52,9 @@ filename = "stack.log.nova"
 # filename = "stack.log.glance"
 # filename = "stack.log.cinder"
 
+current_line = ""
+matrix = {}
 
-class Entry:
-    method = ""
-    path = ""
-    count = 0
-
-    def __init__(self, method, path):
-        self.method = method
-        self.path = path
-        self.count = 1
-        self.count_maps = {}
-        self.grouphead = None
-
-entries = []
-grouphead_entry = None
 
 for line in open(filepath + filename):
     # print "AAA" + line + "BBB"
@@ -76,9 +65,7 @@ for line in open(filepath + filename):
         # print line
         # print "*****************************************************"
 
-        entry = Entry("", line)
-        entries.append(entry)
-        grouphead_entry = entry
+        current_line = line
 
     elif line.startswith("2"):
         tmp_list = line.strip("\n").split('\t')
@@ -108,19 +95,11 @@ for line in open(filepath + filename):
 
         # print method + " | " + path
 
-        if not grouphead_entry.count_maps.has_key(method + " | " + path):
-            entry = Entry(method, path)
-            entries.append(entry)
-            grouphead_entry.count_maps[method + " | " + path] = 0
-            entry.grouphead = grouphead_entry
-        grouphead_entry.count_maps[method + " | " + path] += 1
+        if not matrix.has_key(current_line):
+            matrix[current_line] = {}
+        if not matrix[current_line].has_key(method + " | " + path):
+            matrix[current_line][method + " | " + path] = 0
+        matrix[current_line][method + " | " + path] += 1
 
-# Print the entries.
-for entry in entries:
-    if entry.method == "":
-        print "\n*****************************************************"
-        print entry.path
-        print "*****************************************************"
-    else:
-        entry.count = entry.grouphead.count_maps[entry.method + " | " + entry.path]
-        print entry.method + " | " + entry.path + " | " + str(entry.count)
+# Print the matrix.
+pprint(matrix)
