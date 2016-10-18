@@ -51,13 +51,35 @@ filename = "stack.log.nova"
 # filename = "stack.log.glance"
 # filename = "stack.log.cinder"
 
+
+class Entry:
+    method = ""
+    path = ""
+    count = 0
+
+    def __init__(self, method, path):
+        self.method = method
+        self.path = path
+        self.count = 1
+        self.count_maps = {}
+        self.grouphead = None
+
+entries = []
+grouphead_entry = None
+
 for line in open(filepath + filename):
     # print "AAA" + line + "BBB"
     if line.startswith("#"):
         line = line.strip("\n").strip("#")
-        print "\n*****************************************************"
-        print line
-        print "*****************************************************"
+
+        # print "\n*****************************************************"
+        # print line
+        # print "*****************************************************"
+
+        entry = Entry("", line)
+        entries.append(entry)
+        grouphead_entry = entry
+
     elif line.startswith("2"):
         tmp_list = line.strip("\n").split('\t')
         method = tmp_list[1]
@@ -84,5 +106,21 @@ for line in open(filepath + filename):
         path = regex_id.sub("%NAME%", path)
         path = regex_name.sub("\\1%NAME%", path)
 
-        print method + " | " + path
+        # print method + " | " + path
 
+        if not grouphead_entry.count_maps.has_key(method + " | " + path):
+            entry = Entry(method, path)
+            entries.append(entry)
+            grouphead_entry.count_maps[method + " | " + path] = 0
+            entry.grouphead = grouphead_entry
+        grouphead_entry.count_maps[method + " | " + path] += 1
+
+# Print the entries.
+for entry in entries:
+    if entry.method == "":
+        print "\n*****************************************************"
+        print entry.path
+        print "*****************************************************"
+    else:
+        entry.count = entry.grouphead.count_maps[entry.method + " | " + entry.path]
+        print entry.method + " | " + entry.path + " | " + str(entry.count)
