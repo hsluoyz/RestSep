@@ -2,11 +2,12 @@
 
 import re
 from pprint import pprint
+import numpy as np
 
 
 test_matrix = {}
 api_set = set()
-
+api_array = []
 
 def method_path_to_string(method, path):
     return path + " | " + method
@@ -91,6 +92,7 @@ def init_from_test():
             path = path.replace("5000", "KEYSTONE")
 
             path = path.replace("NOVA/v2.1/", "")
+            path = path.replace("GLANCE/v1/", "")
 
             path = path.replace("/detail", "")
 
@@ -113,13 +115,44 @@ def init_from_test():
             api_set.add(method_path_to_string(method, path))
 
 
+def print_matrix(matrix):
+    x_count, y_count = matrix.shape
+    res = ""
+    for y in range(0, y_count):
+        for x in range(x_count):
+            res += str(matrix[x, y])
+        res += '\n'
+    print res
+
 init_from_test()
 
 # Print the integration test matrix.
 pprint(test_matrix)
 
 # Print the APIs.
-pprint(api_set)
+
+api_array = list(api_set)
+api_array.sort()
+
+for i in range(0, len(api_array)):
+    print str(i) + ":\t" + api_array[i]
+    i += 1
+
+api_count = len(api_array)
 
 print "Test case number = " + str(len(test_matrix))
-print "API number = " + str(len(api_set))
+print "API number = " + str(api_count)
+
+# matrix_np = np.array(matrix)
+
+m = np.ones((api_count, api_count), dtype=np.int)
+print_matrix(m)
+
+# a = [1, 32]
+# b = [3, 4]
+# c = np.array([a, b])
+#
+# print c[:,1]
+
+# print c
+
