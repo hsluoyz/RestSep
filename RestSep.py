@@ -6,7 +6,7 @@ import numpy as np
 import random
 
 
-test_matrix = {}
+test_dict = {}
 api_set = set()
 api_list = []
 
@@ -107,13 +107,19 @@ def init_from_test():
 
             # print method + " | " + path
 
-            if not test_matrix.has_key(current_line):
-                test_matrix[current_line] = {}
-            if not test_matrix[current_line].has_key(method_path_to_string(method, path)):
-                test_matrix[current_line][method_path_to_string(method, path)] = 0
-            test_matrix[current_line][method_path_to_string(method, path)] += 1
+            if not test_dict.has_key(current_line):
+                test_dict[current_line] = {}
+            if not test_dict[current_line].has_key(method_path_to_string(method, path)):
+                test_dict[current_line][method_path_to_string(method, path)] = 0
+            test_dict[current_line][method_path_to_string(method, path)] += 1
 
             api_set.add(method_path_to_string(method, path))
+
+
+def print_list(name_list):
+    for i in range(0, len(name_list)):
+        print str(i) + ":\t" + name_list[i]
+        i += 1
 
 
 def print_matrix(m):
@@ -169,20 +175,18 @@ def evaluate_matrix(m):
 init_from_test()
 
 # Print the integration test matrix.
-pprint(test_matrix)
+pprint(test_dict)
 
 # Print the APIs.
 
 api_list = list(api_set)
 api_list.sort()
 
-for i in range(0, len(api_list)):
-    print str(i) + ":\t" + api_list[i]
-    i += 1
+print_list(api_list)
 
 api_count = len(api_list)
 
-print "Test case number = " + str(len(test_matrix))
+print "Test case number = " + str(len(test_dict))
 print "API number = " + str(api_count)
 
 m = init_random_matrix(api_count / 4, api_count)
