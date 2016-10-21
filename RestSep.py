@@ -56,6 +56,11 @@ current_line = ""
 test_matrix = {}
 api_set = set()
 
+
+def method_path_to_string(method, path):
+    return path + " | " + method
+
+
 for line in open(filepath + filename):
     # print "AAA" + line + "BBB"
     if line.startswith("#"):
@@ -83,6 +88,8 @@ for line in open(filepath + filename):
         path = path.replace("8777", "CEILOMETER")
         path = path.replace("5000", "KEYSTONE")
 
+        path = path.replace("NOVA/v2.1/", "")
+
         path = path.replace("/detail", "")
 
         question_mark = path.find("?")
@@ -97,11 +104,11 @@ for line in open(filepath + filename):
 
         if not test_matrix.has_key(current_line):
             test_matrix[current_line] = {}
-        if not test_matrix[current_line].has_key(method + " | " + path):
-            test_matrix[current_line][method + " | " + path] = 0
-        test_matrix[current_line][method + " | " + path] += 1
+        if not test_matrix[current_line].has_key(method_path_to_string(method, path)):
+            test_matrix[current_line][method_path_to_string(method, path)] = 0
+        test_matrix[current_line][method_path_to_string(method, path)] += 1
 
-        api_set.add(method + " | " + path)
+        api_set.add(method_path_to_string(method, path))
 
 # Print the integration test matrix.
 pprint(test_matrix)
@@ -109,5 +116,5 @@ pprint(test_matrix)
 # Print the APIs.
 pprint(api_set)
 
-print "Testcase number = " + str(len(test_matrix))
+print "Test case number = " + str(len(test_matrix))
 print "API number = " + str(len(api_set))
