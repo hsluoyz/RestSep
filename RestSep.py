@@ -122,8 +122,10 @@ def print_matrix(m):
     for i in range(0, row_size):
         for j in range(0, col_size):
             res += str(m[i, j])
-        res += '\n'
+        if i != row_size - 1:
+            res += '\n'
     print res
+    print "row size = " + str(row_size) + ", column size = " + str(col_size)
 
 
 def init_random_matrix(row_size, col_size):
@@ -149,6 +151,21 @@ def print_result_from_matrix(m):
     print "Category number = " + str(len(res))
 
 
+def get_category_number(m):
+    row_sums = m.sum(axis=1)
+    res = 0
+    for row_sum in row_sums:
+        if row_sum > 0:
+            res += 1
+    return res
+
+
+def evaluate_matrix(m):
+    row_size, col_size = m.shape
+    score_overlap = m.sum() - col_size
+    print "score_overlap = " + str(score_overlap)
+
+
 init_from_test()
 
 # Print the integration test matrix.
@@ -168,9 +185,13 @@ api_count = len(api_list)
 print "Test case number = " + str(len(test_matrix))
 print "API number = " + str(api_count)
 
-m = init_random_matrix(api_count / 3, api_count)
+m = init_random_matrix(api_count / 4, api_count)
 
 print_matrix(m)
+
+evaluate_matrix(m)
+
+print "category number = " + str(get_category_number(m))
 
 # print_result_from_matrix(m)
 
