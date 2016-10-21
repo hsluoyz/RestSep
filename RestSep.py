@@ -7,6 +7,7 @@ import random
 
 
 test_dict = {}
+case_list = []
 api_list = []
 
 def method_path_to_string(method, path):
@@ -75,6 +76,8 @@ def init_from_test():
 
             current_line = line
 
+            case_list.append(line)
+
         elif line.startswith("2"):
             tmp_list = line.strip("\n").split('\t')
             method = tmp_list[1]
@@ -117,7 +120,8 @@ def init_from_test():
 
 def print_list(name_list):
     for i in range(0, len(name_list)):
-        print str(i) + ":\t" + name_list[i]
+        # print str(i) + ":\t" + name_list[i]
+        print str(i) + ": " + name_list[i]
         i += 1
 
 
@@ -173,20 +177,28 @@ def evaluate_matrix(m):
 
 init_from_test()
 
-# Print the integration test matrix.
+# Print the test dictionary.
 pprint(test_dict)
 
-# Print the APIs.
+# Initialize the test case list.
+case_list = list(set(case_list))
+case_list.sort()
+print "case list:"
+print_list(case_list)
+case_count = len(case_list)
 
+# Initialize the API list.
 api_list = list(set(api_list))
 api_list.sort()
-
+print "API list:"
 print_list(api_list)
-
 api_count = len(api_list)
 
-print "Test case number = " + str(len(test_dict))
+# Print the test dictionary.
+
+print "case number = " + str(case_count)
 print "API number = " + str(api_count)
+
 
 m = init_random_matrix(api_count / 4, api_count)
 
