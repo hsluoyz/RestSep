@@ -53,8 +53,8 @@ filename = "stack.log.nova"
 # filename = "stack.log.cinder"
 
 current_line = ""
-matrix = {}
-
+test_matrix = {}
+api_set = set()
 
 for line in open(filepath + filename):
     # print "AAA" + line + "BBB"
@@ -95,11 +95,19 @@ for line in open(filepath + filename):
 
         # print method + " | " + path
 
-        if not matrix.has_key(current_line):
-            matrix[current_line] = {}
-        if not matrix[current_line].has_key(method + " | " + path):
-            matrix[current_line][method + " | " + path] = 0
-        matrix[current_line][method + " | " + path] += 1
+        if not test_matrix.has_key(current_line):
+            test_matrix[current_line] = {}
+        if not test_matrix[current_line].has_key(method + " | " + path):
+            test_matrix[current_line][method + " | " + path] = 0
+        test_matrix[current_line][method + " | " + path] += 1
 
-# Print the matrix.
-pprint(matrix)
+        api_set.add(method + " | " + path)
+
+# Print the integration test matrix.
+pprint(test_matrix)
+
+# Print the APIs.
+pprint(api_set)
+
+print "Testcase number = " + str(len(test_matrix))
+print "API number = " + str(len(api_set))
