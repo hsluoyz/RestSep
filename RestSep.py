@@ -7,7 +7,6 @@ import random
 
 
 test_dict = {}
-api_set = set()
 api_list = []
 
 def method_path_to_string(method, path):
@@ -113,7 +112,7 @@ def init_from_test():
                 test_dict[current_line][method_path_to_string(method, path)] = 0
             test_dict[current_line][method_path_to_string(method, path)] += 1
 
-            api_set.add(method_path_to_string(method, path))
+            api_list.append(method_path_to_string(method, path))
 
 
 def print_list(name_list):
@@ -179,7 +178,7 @@ pprint(test_dict)
 
 # Print the APIs.
 
-api_list = list(api_set)
+api_list = list(set(api_list))
 api_list.sort()
 
 print_list(api_list)
