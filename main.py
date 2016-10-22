@@ -25,6 +25,7 @@ def print_matrix(m):
     print res
     print "row size = " + str(row_size) + ", column size = " + str(col_size)
     print "category number = " + str(get_category_number(m))
+    print "overuse number = " + str(get_overuse_number(m))
     print "covered testcase number = " + str(get_covered_testcase_number(m))
     # print "covered testcase (CTC) score = " + str(get_covered_testcase_score(m)) + "/" + str(100)
 
@@ -61,6 +62,11 @@ def get_category_number(m):
     return res
 
 
+def get_overuse_number(m):
+    row_size, col_size = m.shape
+    return m.sum() - col_size
+
+
 def get_covered_testcase_number(m):
     row_size, col_size = m.shape
     test_row_size, test_col_size = settings.test_matrix.shape
@@ -87,9 +93,7 @@ def get_covered_testcase_score(m):
 
 
 def evaluate_matrix(m):
-    row_size, col_size = m.shape
-    score_overlap = m.sum() - col_size
-    print "score_overlap = " + str(score_overlap)
+    pass
 
 
 test.init_from_test()
@@ -122,7 +126,6 @@ print_list(settings.case_list)
 print "\n*****************************************************"
 print "API list:"
 print_list(settings.api_list)
-
 
 
 print "\n*****************************************************"
