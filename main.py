@@ -24,6 +24,9 @@ def print_matrix(m):
             res += '\n'
     print res
     print "row size = " + str(row_size) + ", column size = " + str(col_size)
+    print "category number = " + str(get_category_number(m))
+    print "covered testcase number = " + str(get_covered_testcase_number(m))
+    # print "covered testcase (CTC) score = " + str(get_covered_testcase_score(m)) + "/" + str(100)
 
 
 def init_random_matrix(row_size, col_size):
@@ -61,13 +64,26 @@ def get_category_number(m):
 def get_covered_testcase_number(m):
     row_size, col_size = m.shape
     test_row_size, test_col_size = settings.test_matrix.shape
+
+    # 1st matrix multiply
     res = np.dot(settings.test_matrix, (1 - m).transpose())
     # print res
 
+    # 2nd matrix multiply
     res = np.dot(np.where(res == 0, 1, 0), np.ones([row_size, 1]))
+
+    # 3rd matrix multiply
     res = np.dot(np.ones([1, test_row_size]), res)
+
+    # Get the score.
     res = int(res[0, 0])
+
     return res
+
+
+def get_covered_testcase_score(m):
+    number = get_covered_testcase_number(m)
+    return 100 * number / settings.case_count
 
 
 def evaluate_matrix(m):
@@ -121,9 +137,6 @@ print_matrix(m)
 print "\n*****************************************************"
 evaluate_matrix(m)
 
-print "category number = " + str(get_category_number(m))
-
-print "covered testcase number = " + str(get_covered_testcase_number(m))
 
 # print_result_from_matrix(m)
 
