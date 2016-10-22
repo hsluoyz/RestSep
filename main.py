@@ -29,10 +29,9 @@ def print_matrix(m):
     overuse_number = get_overuse_number(m)
     covered_testcase_number = get_covered_testcase_number(m)
 
-    print "category number = " + str(category_number) + " (score: " + str(get_category_number_score(category_number)) + ")"
-    print "overuse number = " + str(overuse_number) + " (score: " + str(get_overuse_score(overuse_number)) + ")"
-    print "covered testcase number = " + str(covered_testcase_number) + " (score: " + str(get_covered_testcase_score(covered_testcase_number)) + ")"
-    # print "covered testcase (CTC) score = " + str(get_covered_testcase_score(m)) + "/" + str(100)
+    print "category number = " + str(category_number) + " (expected: 10, score: " + str(get_category_number_score(category_number)) + ")"
+    print "overuse number = " + str(overuse_number) + " (expected: 0, score: " + str(get_overuse_score(overuse_number)) + ")"
+    print "covered testcase number = " + str(covered_testcase_number) + " (expected: " + str(settings.case_count) + ", score: " + str(get_covered_testcase_score(covered_testcase_number)) + ")"
 
 
 def init_random_matrix(row_size, col_size):
@@ -50,7 +49,7 @@ def print_result_from_matrix(m):
         row_api_list = []
         for j in range(0, col_size):
             if m[i, j] == 1:
-                row_api_list.append(api_list[j])
+                row_api_list.append(settings.api_list[j])
         if len(row_api_list) != 0:
             res.append(row_api_list)
 
