@@ -161,3 +161,38 @@ def cleanse_test_matrix(m, case_list):
     # print_list(new_case_list)
 
     return new_m, new_case_list
+
+
+def row_cover(r1, r2, col_size):
+    for i in range(0, col_size):
+        if r1[i] < r2[i]:
+            return False
+    return True
+
+
+def cleanse_test_matrix2(m, case_list):
+    row_size, col_size = m.shape
+
+    new_m = np.empty([0, col_size], dtype=int)
+    new_case_list = []
+    for i in range(row_size - 1, -1, -1):
+        is_covered = False
+        new_row_size, _ = new_m.shape
+        for i2 in range(0, new_row_size):
+            if row_cover(new_m[i2, :], m[i, :], col_size):
+                is_covered = True
+                new_case_list[i2] = case_list[i] + ", " + new_case_list[i2]
+                break
+        if not is_covered:
+            new_m = np.insert(new_m, 0, values=m[i, :], axis=0)
+            new_case_list.insert(0, case_list[i])
+
+    return new_m, new_case_list
+
+if __name__ == '__main__':
+    m = np.ones([3, 3])
+    n = np.zeros([3, 3])
+    print m
+    print n
+
+    print np.insert(m, 3, values=n[0, :], axis=0)
