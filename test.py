@@ -189,10 +189,17 @@ def cleanse_test_matrix2(m, case_list):
 
     return new_m, new_case_list
 
-if __name__ == '__main__':
-    m = np.ones([3, 3])
-    n = np.zeros([3, 3])
-    print m
-    print n
 
-    print np.insert(m, 3, values=n[0, :], axis=0)
+if __name__ == '__main__':
+    # m = np.ones([3, 3])
+    # n = np.zeros([3, 3])
+    # print m
+    # print n
+    #
+    # print np.insert(m, 3, values=n[0, :], axis=0)
+
+    m = np.array([[2, 1, 3], [0, 0, 0], [1, 1, 1]])
+    print m
+    m = np.dot(m, np.ones([3, 1]))
+    # m = m.transpose()
+    print m

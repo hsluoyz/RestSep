@@ -58,6 +58,18 @@ def get_category_number(m):
     return res
 
 
+def get_covered_testcase_number(m):
+    row_size, col_size = m.shape
+    test_row_size, test_col_size = settings.test_matrix.shape
+    res = np.dot(settings.test_matrix, (1 - m).transpose())
+    # print res
+
+    res = np.dot(np.where(res == 0, 1, 0), np.ones([row_size, 1]))
+    res = np.dot(np.ones([1, test_row_size]), res)
+    res = int(res[0, 0])
+    return res
+
+
 def evaluate_matrix(m):
     row_size, col_size = m.shape
     score_overlap = m.sum() - col_size
@@ -110,6 +122,8 @@ print "\n*****************************************************"
 evaluate_matrix(m)
 
 print "category number = " + str(get_category_number(m))
+
+print "covered testcase number = " + str(get_covered_testcase_number(m))
 
 # print_result_from_matrix(m)
 
