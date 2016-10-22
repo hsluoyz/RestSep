@@ -24,9 +24,14 @@ def print_matrix(m):
             res += '\n'
     print res
     print "row size = " + str(row_size) + ", column size = " + str(col_size)
-    print "category number = " + str(get_category_number(m))
-    print "overuse number = " + str(get_overuse_number(m))
-    print "covered testcase number = " + str(get_covered_testcase_number(m))
+
+    category_number = get_category_number(m)
+    overuse_number = get_overuse_number(m)
+    covered_testcase_number = get_covered_testcase_number(m)
+
+    print "category number = " + str(category_number) + " (score: " + str(get_category_number_score(category_number)) + ")"
+    print "overuse number = " + str(overuse_number) + " (score: " + str(get_overuse_score(overuse_number)) + ")"
+    print "covered testcase number = " + str(covered_testcase_number) + " (score: " + str(get_covered_testcase_score(covered_testcase_number)) + ")"
     # print "covered testcase (CTC) score = " + str(get_covered_testcase_score(m)) + "/" + str(100)
 
 
@@ -87,8 +92,15 @@ def get_covered_testcase_number(m):
     return res
 
 
-def get_covered_testcase_score(m):
-    number = get_covered_testcase_number(m)
+def get_category_number_score(number):
+    return max(100 - 3 * abs(number - settings.api_count / 10), 0)
+
+
+def get_overuse_score(number):
+    return max(100 - number, 0)
+
+
+def get_covered_testcase_score(number):
     return 100 * number / settings.case_count
 
 
