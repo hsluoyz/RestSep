@@ -32,6 +32,7 @@ def print_matrix(m):
     print "category number = " + str(category_number) + " (expected: 10, score: " + str(get_category_number_score(category_number)) + ")"
     print "overuse number = " + str(overuse_number) + " (expected: 0, score: " + str(get_overuse_score(overuse_number)) + ")"
     print "covered testcase number = " + str(covered_testcase_number) + " (expected: " + str(settings.case_count) + ", score: " + str(get_covered_testcase_score(covered_testcase_number)) + ")"
+    print "final score = " + str(evaluate_matrix_from_numbers(category_number, overuse_number, covered_testcase_number)) + "/300"
 
 
 def init_random_matrix(row_size, col_size):
@@ -104,7 +105,19 @@ def get_covered_testcase_score(number):
 
 
 def evaluate_matrix(m):
-    pass
+    score = 0
+    score += get_category_number_score(get_category_number(m))
+    score += get_overuse_score(get_overuse_number(m))
+    score += get_covered_testcase_score(get_covered_testcase_number(m))
+    return score
+
+
+def evaluate_matrix_from_numbers(n1, n2, n3):
+    score = 0
+    score += get_category_number_score(n1)
+    score += get_overuse_score(n2)
+    score += get_covered_testcase_score(n3)
+    return score
 
 
 test.init_from_test()
