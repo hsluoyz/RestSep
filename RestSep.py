@@ -130,8 +130,37 @@ def init_test_matrix():
     for i in range(0, case_count):
         for j in range(0, api_count):
             if test_dict[case_list[i]].has_key(api_list[j]):
-                m[i, j] = test_dict[case_list[i]][api_list[j]]
+                # m[i, j] = test_dict[case_list[i]][api_list[j]]
+                # We do not calculate the occurrence for now.
+                m[i, j] = 1
     return m
+
+
+def unique_rows(a):
+    a = np.ascontiguousarray(a)
+    unique_a = np.unique(a.view([('', a.dtype)]*a.shape[1]))
+    return unique_a.view(a.dtype).reshape((unique_a.shape[0], a.shape[1]))
+
+
+def cleanse_test_matrix(m, case_list):
+    row_size, col_size = m.shape
+
+    new_m = unique_rows(m)
+    new_row_size, _ = new_m.shape
+    # print_matrix(new_m)
+    new_case_list = [""] * new_row_size
+
+    for i in range(0, row_size):
+        for i2 in range(0, new_row_size):
+            if tuple(m[i, :]) == tuple(new_m[i2, :]):
+                new_case_list[i2] += case_list[i] + ", "
+
+    for i in range(0, len(new_case_list)):
+        new_case_list[i] = new_case_list[i].rstrip(', ')
+
+    #print_list(new_case_list)
+
+    return new_m, new_case_list
 
 
 def print_matrix(m):
@@ -192,23 +221,35 @@ init_from_test()
 # Initialize the test case list.
 case_list = list(set(case_list))
 case_list.sort()
-print "case list:"
-print_list(case_list)
 case_count = len(case_list)
 
 # Initialize the API list.
 api_list = list(set(api_list))
 api_list.sort()
-print "API list:"
-print_list(api_list)
 api_count = len(api_list)
 
 # Initialize the test matrix.
-print "\n*****************************************************"
-print "test matrix:"
 test_matrix = init_test_matrix()
 
+# Remove the duplicated rows in the test matrix.
+print "\n*****************************************************"
+print "cleansed test matrix:"
+test_matrix, case_list = cleanse_test_matrix(test_matrix, case_list)
+case_count = len(case_list)
+
 print_matrix(test_matrix)
+
+
+print "\n*****************************************************"
+print "case list:"
+print_list(case_list)
+
+
+print "\n*****************************************************"
+print "API list:"
+print_list(api_list)
+
+
 
 print "\n*****************************************************"
 print "case number = " + str(case_count)
