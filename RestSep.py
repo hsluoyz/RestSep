@@ -125,6 +125,15 @@ def print_list(name_list):
         i += 1
 
 
+def init_test_matrix():
+    m = np.zeros((case_count, api_count), dtype=np.int)
+    for i in range(0, case_count):
+        for j in range(0, api_count):
+            if test_dict[case_list[i]].has_key(api_list[j]):
+                m[i, j] = test_dict[case_list[i]][api_list[j]]
+    return m
+
+
 def print_matrix(m):
     row_size, col_size = m.shape
     res = ""
@@ -178,7 +187,7 @@ def evaluate_matrix(m):
 init_from_test()
 
 # Print the test dictionary.
-pprint(test_dict)
+# pprint(test_dict)
 
 # Initialize the test case list.
 case_list = list(set(case_list))
@@ -194,8 +203,14 @@ print "API list:"
 print_list(api_list)
 api_count = len(api_list)
 
-# Print the test dictionary.
+# Initialize the test matrix.
+print "\n*****************************************************"
+print "test matrix:"
+test_matrix = init_test_matrix()
 
+print_matrix(test_matrix)
+
+print "\n*****************************************************"
 print "case number = " + str(case_count)
 print "API number = " + str(api_count)
 
@@ -204,6 +219,7 @@ m = init_random_matrix(api_count / 4, api_count)
 
 print_matrix(m)
 
+print "\n*****************************************************"
 evaluate_matrix(m)
 
 print "category number = " + str(get_category_number(m))
