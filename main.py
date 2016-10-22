@@ -79,7 +79,7 @@ def get_covered_testcase_number(m):
     res = np.dot(np.where(res == 0, 1, 0), np.ones([row_size, 1]))
 
     # 3rd matrix multiply
-    res = np.dot(np.ones([1, test_row_size]), res)
+    res = np.dot(np.ones([1, test_row_size]), np.where(res != 0, 1, 0))
 
     # Get the score.
     res = int(res[0, 0])
