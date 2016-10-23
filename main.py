@@ -26,13 +26,13 @@ def print_matrix(m):
     print "row size = " + str(row_size) + ", column size = " + str(col_size)
 
     category_number = get_category_number(m)
-    overuse_number = get_overuse_number(m)
+    overuse_number = get_overuse_number(m)[0]
     covered_testcase_number = get_covered_testcase_number(m)
 
     print "category number = " + str(category_number) + " (expected: 10, score: " + str(get_category_number_score(category_number)) + ")"
-    print "overuse number = " + str(overuse_number) + " (expected: 0, score: " + str(get_overuse_score(overuse_number)) + ")"
+    print "overuse number = " + str(overuse_number) + " (expected: 0, score: " + str(get_overuse_score(overuse_number, (row_size - 1) * col_size)) + ")"
     print "covered testcase number = " + str(covered_testcase_number) + " (expected: " + str(settings.case_count) + ", score: " + str(get_covered_testcase_score(covered_testcase_number)) + ")"
-    print "final score = " + str(evaluate_matrix_from_numbers(category_number, overuse_number, covered_testcase_number)) + "/300"
+    print "final score = " + str(evaluate_matrix_from_numbers(m, category_number, overuse_number, covered_testcase_number)) + "/300"
 
 
 def init_random_matrix(row_size, col_size):
@@ -69,7 +69,7 @@ def get_category_number(m):
 
 def get_overuse_number(m):
     row_size, col_size = m.shape
-    return m.sum() - col_size
+    return m.sum() - col_size, (row_size - 1) * col_size
 
 
 def get_covered_testcase_number(m):
@@ -96,8 +96,8 @@ def get_category_number_score(number):
     return max(100 - 3 * abs(number - settings.api_count / 10), 0)
 
 
-def get_overuse_score(number):
-    return max(100 - number, 0)
+def get_overuse_score(number, overall_number):
+    return max(100 - 100 * 2 * number / overall_number, 0)
 
 
 def get_covered_testcase_score(number):
@@ -107,15 +107,18 @@ def get_covered_testcase_score(number):
 def evaluate_matrix(m):
     score = 0
     score += get_category_number_score(get_category_number(m))
-    score += get_overuse_score(get_overuse_number(m))
+    number, overall_number = get_overuse_number(m)
+    score += get_overuse_score(number, overall_number)
     score += get_covered_testcase_score(get_covered_testcase_number(m))
     return score
 
 
-def evaluate_matrix_from_numbers(n1, n2, n3):
+def evaluate_matrix_from_numbers(m, n1, n2, n3):
+    row_size, col_size = m.shape
+
     score = 0
     score += get_category_number_score(n1)
-    score += get_overuse_score(n2)
+    score += get_overuse_score(n2, (row_size - 1) * col_size)
     score += get_covered_testcase_score(n3)
     return score
 
@@ -161,8 +164,8 @@ m = init_random_matrix(settings.api_count / 4, settings.api_count)
 
 print_matrix(m)
 
-print "\n*****************************************************"
-evaluate_matrix(m)
+# print "\n*****************************************************"
+# evaluate_matrix(m)
 
 
 # print_result_from_matrix(m)
