@@ -7,6 +7,7 @@ import random
 import settings
 import test
 
+
 def print_list(name_list):
     for i in range(0, len(name_list)):
         # print str(i) + ":\t" + name_list[i]

@@ -5,6 +5,7 @@ import numpy as np
 
 import settings
 
+
 def method_path_to_string(method, path):
     return path + " | " + method
 
