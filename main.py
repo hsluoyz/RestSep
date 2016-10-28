@@ -6,6 +6,7 @@ import random
 
 import settings
 import test
+import ga
 
 
 def print_list(name_list):
@@ -163,6 +164,12 @@ print "API number = " + str(settings.api_count)
 
 m = init_random_matrix(settings.category_max_count, settings.api_count)
 
+print_matrix(m)
+
+print "\n*****************************************************"
+print "After mutation:"
+
+ga.mutate_matrix(m)
 print_matrix(m)
 
 # print "\n*****************************************************"
