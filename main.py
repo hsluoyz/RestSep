@@ -161,7 +161,7 @@ print "case number = " + str(settings.case_count)
 print "API number = " + str(settings.api_count)
 
 
-m = init_random_matrix(settings.api_count / 4, settings.api_count)
+m = init_random_matrix(settings.category_max_count, settings.api_count)
 
 print_matrix(m)
 
