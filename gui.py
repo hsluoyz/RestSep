@@ -8,7 +8,30 @@ import settings
 import main
 
 
-data = {'col1': ['1', '2', '3'], 'col2': ['4', '5', '6'], 'col3': ['7', '8', '9']}
+class RotatedHeaderView(QHeaderView):
+    def __init__(self, parent=None):
+        super(RotatedHeaderView, self).__init__(Qt.Horizontal, parent)
+        self.setMinimumSectionSize(20)
+
+    def paintSection(self, painter, rect, logicalIndex ):
+        painter.save()
+        # translate the painter such that rotate will rotate around the correct point
+        painter.translate(rect.x()+rect.width(), rect.y())
+        painter.rotate(90)
+        # and have parent code paint at this location
+        newrect = QRect(0, 0, rect.height(), rect.width())
+        super(RotatedHeaderView, self).paintSection(painter, newrect, logicalIndex)
+        painter.restore()
+
+    def minimumSizeHint(self):
+        size = super(RotatedHeaderView, self).minimumSizeHint()
+        size.transpose()
+        return size
+
+    def sectionSizeFromContents(self, logicalIndex):
+        size = super(RotatedHeaderView, self).sectionSizeFromContents(logicalIndex)
+        size.transpose()
+        return size
 
 
 class LPTable(QTableWidget):
@@ -18,12 +41,26 @@ class LPTable(QTableWidget):
         self.set_data()
         self.resizeColumnsToContents()
         self.resizeRowsToContents()
+
+        # headerView = RotatedHeaderView()
+        # self.setHorizontalHeader(headerView)
         for i in range(9):
             self.setColumnWidth(i, 22)
 
 
     def set_data(self):
-        #self.setHorizontalHeaderLabels(settings.api_list)
+        # Column header
+        hlist = []
+        self.setHorizontalHeaderLabels(settings.api_list)
+        for i in range(settings.api_count):
+            hlist.append(str(i))
+        self.setHorizontalHeaderLabels(hlist)
+
+        for i in range(settings.api_count):
+            header_item = self.horizontalHeaderItem(i);
+            header_item.setToolTip(settings.api_list[i]);
+
+        # Row header
         vlist = []
         for i in range(settings.case_count):
             vlist.append(str(i) + ": " + settings.case_list[i])
@@ -32,6 +69,7 @@ class LPTable(QTableWidget):
         vheader = self.verticalHeader()
         vheader.setFixedWidth(340)
 
+        # Items
         row_size, col_size = self.matrix.shape
         for i in range(row_size):
             for j in range(col_size):
@@ -39,7 +77,7 @@ class LPTable(QTableWidget):
                 new_item = QTableWidgetItem(str(value))
                 if value == 1:
                     new_item.setBackground(QColor(255, 0, 0))
-                new_item.setToolTip("aaa")
+                # new_item.setToolTip("aaa")
                 self.setItem(i, j, new_item)
 
 
