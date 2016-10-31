@@ -64,7 +64,7 @@ def init_from_test():
     for line in open(filepath + filename):
         # print "AAA" + line + "BBB"
         if line.startswith("#"):
-            line = line.strip("\n").strip("#")
+            line = line.strip("\n").strip("#").lstrip('test_')
 
             # print "\n*****************************************************"
             # print line
