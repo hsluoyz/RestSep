@@ -57,17 +57,21 @@ class LPTable(QTableWidget):
         self.setHorizontalHeaderLabels(hlist)
 
         for i in range(settings.api_count):
-            header_item = self.horizontalHeaderItem(i);
-            header_item.setToolTip(settings.api_list[i]);
+            header_item = self.horizontalHeaderItem(i)
+            header_item.setToolTip(settings.api_list[i])
 
         # Row header
         vlist = []
         for i in range(settings.case_count):
-            vlist.append(str(i) + ": " + settings.case_list[i])
+            vlist.append(str(i) + ":" + settings.case_list[i])
         self.setVerticalHeaderLabels(vlist)
 
+        for i in range(settings.case_count):
+            header_item = self.verticalHeaderItem(i)
+            header_item.setToolTip(settings.case_list[i])
+
         vheader = self.verticalHeader()
-        vheader.setFixedWidth(340)
+        vheader.setFixedWidth(255)
 
         # Items
         row_size, col_size = self.matrix.shape
