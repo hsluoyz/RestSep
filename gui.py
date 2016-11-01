@@ -67,8 +67,8 @@ class LPTable(QTableWidget):
 
         # headerView = RotatedHeaderView()
         # self.setHorizontalHeader(headerView)
-        for i in range(9):
-            self.setColumnWidth(i, 22)
+        for i in range(settings.api_count):
+            self.setColumnWidth(i, 20)
 
         # self.setMouseTracking(True)
         #
@@ -122,7 +122,7 @@ class LPTable(QTableWidget):
             header_item.setToolTip(settings.case_list[i])
 
         vheader = self.verticalHeader()
-        vheader.setFixedWidth(255)
+        vheader.setFixedWidth(350)
 
         # Items
         row_size, col_size = self.matrix.shape
@@ -131,7 +131,7 @@ class LPTable(QTableWidget):
                 value = self.matrix[i, j]
                 new_item = QTableWidgetItem(str(value))
                 if value == 1:
-                    new_item.setBackground(QColor(255, 0, 0))
+                    new_item.setBackground(QColor(255, 50, 50))
                 # new_item.setToolTip("aaa")
                 self.setItem(i, j, new_item)
 
