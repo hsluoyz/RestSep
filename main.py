@@ -76,9 +76,9 @@ def do_init():
     print "\n*****************************************************"
     print "cleansed test matrix:"
     # Remove the duplicated rows in the test matrix.
-    settings.test_matrix, settings.case_list = test.cleanse_test_matrix(settings.test_matrix, settings.case_list)
+    # settings.test_matrix, settings.case_list = test.cleanse_test_matrix(settings.test_matrix, settings.case_list)
     # Remove the shadow-covered rows in the test matrix.
-    settings.test_matrix, settings.case_list = test.cleanse_test_matrix2(settings.test_matrix, settings.case_list)
+    # settings.test_matrix, settings.case_list = test.cleanse_test_matrix2(settings.test_matrix, settings.case_list)
     settings.case_count = len(settings.case_list)
 
     ga.print_matrix(settings.test_matrix)
@@ -154,6 +154,6 @@ if __name__ == '__main__':
     print "\n*****************************************************"
     print_result_from_matrix_list()
 
-    for i in range(100):
+    for i in range(400):
         do_evolve()
         print_result_from_matrix_list()
