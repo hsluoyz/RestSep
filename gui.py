@@ -16,8 +16,10 @@ class RotatedHeaderView(QHeaderView):
     def paintSection(self, painter, rect, logicalIndex ):
         painter.save()
         # translate the painter such that rotate will rotate around the correct point
-        painter.translate(rect.x()+rect.width(), rect.y())
-        painter.rotate(90)
+        # painter.translate(rect.x()+rect.width(), rect.y())
+        # painter.rotate(90)
+        # painter.translate(rect.x(), rect.y()+rect.height())
+        # painter.rotate(-90)
         # and have parent code paint at this location
         newrect = QRect(0, 0, rect.height(), rect.width())
         super(RotatedHeaderView, self).paintSection(painter, newrect, logicalIndex)
@@ -47,13 +49,13 @@ class LPTable(QTableWidget):
         for i in range(9):
             self.setColumnWidth(i, 22)
 
-
     def set_data(self):
         # Column header
         hlist = []
         self.setHorizontalHeaderLabels(settings.api_list)
         for i in range(settings.api_count):
             hlist.append(str(i))
+            # hlist.append(str(i) + ":" + settings.api_list[i])
         self.setHorizontalHeaderLabels(hlist)
 
         for i in range(settings.api_count):
