@@ -46,12 +46,13 @@ class HeaderViewFilter(QObject):
         if event.type() == QEvent.HoverMove:
             logical_index = self.header.logicalIndexAt(event.pos())
             if self.prev_logical_index != logical_index:
-                print "haha " + str(logical_index)
+                # print "haha " + str(logical_index)
                 QToolTip.hideText()
-                QToolTip.showText(QCursor.pos(), "aaa")
+                QToolTip.showText(QCursor.pos(), settings.api_list[logical_index])
             self.prev_logical_index = logical_index
-
-            return False
+        elif event.type() == QEvent.HoverLeave:
+            QToolTip.hideText()
+            self.prev_logical_index = -1
         return False
             # you could emit a signal here if you wanted
 
@@ -108,7 +109,7 @@ class LPTable(QTableWidget):
 
         # for i in range(settings.api_count):
         #     header_item = self.horizontalHeaderItem(i)
-        #     header_item.setToolTip(settings.api_list[i])
+        #     header_item.setForeground(QColor(255, 0, 0))
 
         # Row header
         vlist = []
