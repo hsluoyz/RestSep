@@ -36,6 +36,26 @@ class RotatedHeaderView(QHeaderView):
         return size
 
 
+class HeaderViewFilter(QObject):
+    def __init__(self, parent, header, *args):
+        super(HeaderViewFilter, self).__init__(parent, *args)
+        self.header = header
+        self.prev_logical_index = -1
+
+    def eventFilter(self, object, event):
+        if event.type() == QEvent.HoverMove:
+            logical_index = self.header.logicalIndexAt(event.pos())
+            if self.prev_logical_index != logical_index:
+                print "haha " + str(logical_index)
+                QToolTip.hideText()
+                QToolTip.showText(QCursor.pos(), "aaa")
+            self.prev_logical_index = logical_index
+
+            return False
+        return False
+            # you could emit a signal here if you wanted
+
+
 class LPTable(QTableWidget):
     def __init__(self, matrix):
         QTableWidget.__init__(self, settings.case_count, settings.api_count)
@@ -49,6 +69,34 @@ class LPTable(QTableWidget):
         for i in range(9):
             self.setColumnWidth(i, 22)
 
+        # self.setMouseTracking(True)
+        #
+        # self.current_hover = [0, 0]
+        # self.itemEntered.connect(self.header_hover)
+        # self.horizontalHeader().enterEvent.connect(self.header_hover)
+
+        self.filter = HeaderViewFilter(self, self.horizontalHeader())
+        self.horizontalHeader().setMouseTracking(True)
+        self.horizontalHeader().installEventFilter(self.filter)
+
+    # def header_hover(self, row):
+    #     print str(row)
+    #
+    #     QToolTip.hideText()
+    #     QToolTip.showText(QCursor.pos(), "aaa")
+    #
+    # def cell_hover(self, row, column):
+    #     item = self.item(row, column)
+    #     print str(row) + ", " + str(column)
+    #     old_item = self.item(self.current_hover[0], self.current_hover[1])
+    #     if self.current_hover != [row, column]:
+    #         old_item.setBackground(QBrush(QColor('white')))
+    #         item.setBackground(QBrush(QColor('yellow')))
+    #     self.current_hover = [row, column]
+    #
+    #     QToolTip.hideText()
+    #     QToolTip.showText(QCursor.pos(), "aaa")
+
     def set_data(self):
         # Column header
         hlist = []
@@ -58,9 +106,9 @@ class LPTable(QTableWidget):
             # hlist.append(str(i) + ":" + settings.api_list[i])
         self.setHorizontalHeaderLabels(hlist)
 
-        for i in range(settings.api_count):
-            header_item = self.horizontalHeaderItem(i)
-            header_item.setToolTip(settings.api_list[i])
+        # for i in range(settings.api_count):
+        #     header_item = self.horizontalHeaderItem(i)
+        #     header_item.setToolTip(settings.api_list[i])
 
         # Row header
         vlist = []
