@@ -136,6 +136,47 @@ class LPTable(QTableWidget):
                 self.setItem(i, j, new_item)
 
 
+class LPHeaderTable(QTableWidget):
+    def __init__(self):
+        QTableWidget.__init__(self, settings.case_count, settings.api_count)
+        self.set_data()
+        self.resizeColumnsToContents()
+        self.resizeRowsToContents()
+
+        # headerView = RotatedHeaderView()
+        # self.setHorizontalHeader(headerView)
+        for i in range(settings.api_count):
+            self.setColumnWidth(i, 20)
+
+        # self.setMouseTracking(True)
+        #
+        # self.current_hover = [0, 0]
+        # self.itemEntered.connect(self.header_hover)
+        # self.horizontalHeader().enterEvent.connect(self.header_hover)
+
+        # self.filter = HeaderViewFilter(self, self.horizontalHeader())
+        # self.horizontalHeader().setMouseTracking(True)
+        # self.horizontalHeader().installEventFilter(self.filter)
+
+    def set_data(self):
+        # Column header
+        hlist = []
+        self.setHorizontalHeaderLabels(settings.api_list)
+        for i in range(settings.api_count):
+            hlist.append(str(i))
+            # hlist.append(str(i) + ":" + settings.api_list[i])
+        self.setHorizontalHeaderLabels(hlist)
+
+        # for i in range(settings.api_count):
+        #     header_item = self.horizontalHeaderItem(i)
+        #     header_item.setForeground(QColor(255, 0, 0))
+
+        vheader = self.verticalHeader()
+        vheader.setFixedWidth(350)
+
+        self.setRowCount(0)
+
+
 class MyMainWindow(QMainWindow):
     def __init__(self):
         super(MyMainWindow, self).__init__()
@@ -150,6 +191,11 @@ class MyMainWindow(QMainWindow):
 
         self.connect(self, SIGNAL('closeEmitApp()'), SLOT('close()'))
 
+        table_header = LPHeaderTable()
+        # self.setCentralWidget(table_header)
+        # table_header.setFixedWidth(1920)
+        table_header.setFixedHeight(21)
+
         table = LPTable(settings.test_matrix)
         # self.setCentralWidget(table)
         # table.setFixedWidth(1920)
@@ -157,12 +203,9 @@ class MyMainWindow(QMainWindow):
         table.setCornerButtonEnabled(False)
         # table.setGeometry(QRect(0, 0, 200, 200))
 
-        table2 = LPTable(settings.test_matrix)
-        # self.setCentralWidget(table2)
-
         main_layout = QVBoxLayout()
         # main_layout = self.layout()
-        main_layout.setMargin(5)
+        main_layout.setMargin(0)
         main_layout.setSpacing(0)
         main_layout.setSizeConstraint(QLayout.SetMaximumSize)
 
@@ -170,7 +213,7 @@ class MyMainWindow(QMainWindow):
         # pushbutton_1.setText('First')
         # main_layout.addWidget(pushbutton_1)
 
-        main_layout.addWidget(table2)
+        main_layout.addWidget(table_header)
         main_layout.addWidget(table)
 
         main_widget = QWidget()
