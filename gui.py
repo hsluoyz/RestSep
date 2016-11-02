@@ -8,6 +8,16 @@ import settings
 import main
 
 
+def get_path_head(api_name):
+    api_item_list = api_name.split('|')[0].split('/')
+    return api_item_list[0]
+
+
+def get_method(api_name):
+    api_item_list = api_name.split('| ')
+    return api_item_list[-1]
+
+
 class RotatedHeaderView(QHeaderView):
     def __init__(self, parent=None):
         super(RotatedHeaderView, self).__init__(Qt.Horizontal, parent)
@@ -110,15 +120,16 @@ class LPTable(QTableWidget):
     def set_data(self):
         # Column header
         hlist = []
-        self.setHorizontalHeaderLabels(settings.api_list)
+        # self.setHorizontalHeaderLabels(settings.api_list)
         for i in range(settings.api_count):
             hlist.append(str(i))
             # hlist.append(str(i) + ":" + settings.api_list[i])
         self.setHorizontalHeaderLabels(hlist)
 
-        # for i in range(settings.api_count):
-        #     header_item = self.horizontalHeaderItem(i)
-        #     header_item.setForeground(QColor(255, 0, 0))
+        for i in range(settings.api_count):
+            header_item = self.horizontalHeaderItem(i)
+            self.horizontalHeader()
+            header_item.setBackground(QColor(255, 0, 0))
 
         # Row header
         vlist = []
@@ -243,6 +254,16 @@ class MyMainWindow(QMainWindow):
 
 def run_gui(args):
     app = QApplication(args)
+    # won't work on windows style.
+
+    # Windows
+    # WindowsXP
+    # WindowsVista
+    # Motif
+    # CDE
+    # Plastique
+    # Cleanlooks
+    app.setStyle(QStyleFactory.create('Cleanlooks'))
 
     main_window = MyMainWindow()
 
@@ -254,5 +275,11 @@ def run_gui(args):
 
 
 if __name__ == "__main__":
+    # for style in QStyleFactory.keys():
+    #     print style
+
     main.do_init()
     run_gui(sys.argv)
+
+    # print get_path_head('os-agents/%NAME% | POST')
+    # print get_method('os-agents/%NAME% | POST')
