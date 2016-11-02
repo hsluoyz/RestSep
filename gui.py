@@ -136,11 +136,34 @@ class LPTable(QTableWidget):
                 self.setItem(i, j, new_item)
 
 
+class MyMainWindow(QMainWindow):
+    def __init__(self):
+        super(MyMainWindow, self).__init__()
+        self.init_ui()
+
+    def init_ui(self):
+        # self.statusBar().showMessage('Ready')
+        # self.setGeometry(300, 300, 250, 150)
+        self.setWindowTitle('RestSep')
+        # textEdit = QTextEdit()
+        # self.setCentralWidget(textEdit)
+
+        table = LPTable(settings.test_matrix)
+        self.setCentralWidget(table)
+
+        self.showMaximized()
+        self.show()
+
+
 def run_gui(args):
     app = QApplication(args)
-    table = LPTable(settings.test_matrix)
-    table.showMaximized()
+
+    main_window = MyMainWindow()
+
+    # table = LPTable(settings.test_matrix)
+    # table.showMaximized()
     # table.show()
+
     sys.exit(app.exec_())
 
 
