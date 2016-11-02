@@ -129,7 +129,24 @@ class LPTable(QTableWidget):
         for i in range(settings.api_count):
             header_item = self.horizontalHeaderItem(i)
             self.horizontalHeader()
-            header_item.setBackground(QColor(255, 0, 0))
+            if get_method(settings.api_list[i]) == 'GET':
+                # Red
+                header_item.setBackground(QColor(255, 0, 0))
+            elif get_method(settings.api_list[i]) == 'POST':
+                # Green
+                header_item.setBackground(QColor(0, 255, 0))
+            elif get_method(settings.api_list[i]) == 'PUT':
+                # Blue
+                header_item.setBackground(QColor(0, 0, 255))
+            elif get_method(settings.api_list[i]) == 'DELETE':
+                # Yellow
+                header_item.setBackground(QColor(255, 255, 0))
+            elif get_method(settings.api_list[i]) == 'HEAD':
+                # Purple
+                header_item.setBackground(QColor(255, 0, 255))
+            else:
+                # Black
+                header_item.setBackground(QColor(0, 0, 0))
 
         # Row header
         vlist = []
