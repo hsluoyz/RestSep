@@ -81,7 +81,7 @@ class LPTable(QTableWidget):
         self.horizontalHeader().setMouseTracking(True)
         self.horizontalHeader().installEventFilter(self.filter)
 
-        self.connect(self.horizontalScrollBar(), SIGNAL("actionTriggered(int)"), self.sync_scroll)
+        self.connect(self.horizontalScrollBar(), SIGNAL("valueChanged(int)"), self.sync_scroll)
 
     def sync_scroll(self):
         slide_value = self.horizontalScrollBar().value()
@@ -152,6 +152,7 @@ class LPHeaderTable(QTableWidget):
         self.resizeColumnsToContents()
         self.resizeRowsToContents()
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
 
         # headerView = RotatedHeaderView()
         # self.setHorizontalHeader(headerView)
