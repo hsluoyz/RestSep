@@ -58,9 +58,10 @@ class HeaderViewFilter(QObject):
 
 
 class LPTable(QTableWidget):
-    def __init__(self, matrix):
+    def __init__(self, matrix, header_table):
         QTableWidget.__init__(self, settings.case_count, settings.api_count)
         self.matrix = matrix
+        self.header_table = header_table
         self.set_data()
         self.resizeColumnsToContents()
         self.resizeRowsToContents()
@@ -79,6 +80,14 @@ class LPTable(QTableWidget):
         self.filter = HeaderViewFilter(self, self.horizontalHeader())
         self.horizontalHeader().setMouseTracking(True)
         self.horizontalHeader().installEventFilter(self.filter)
+
+        self.connect(self.horizontalScrollBar(), SIGNAL("actionTriggered(int)"), self.sync_scroll)
+
+    def sync_scroll(self):
+        slide_value = self.horizontalScrollBar().value()
+        # print slide_value
+        self.header_table.horizontalScrollBar().setValue(slide_value)
+        # self.sliderBar2.setValue(slide_value)
 
     # def header_hover(self, row):
     #     print str(row)
@@ -142,6 +151,7 @@ class LPHeaderTable(QTableWidget):
         self.set_data()
         self.resizeColumnsToContents()
         self.resizeRowsToContents()
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         # headerView = RotatedHeaderView()
         # self.setHorizontalHeader(headerView)
@@ -191,12 +201,12 @@ class MyMainWindow(QMainWindow):
 
         self.connect(self, SIGNAL('closeEmitApp()'), SLOT('close()'))
 
-        table_header = LPHeaderTable()
-        # self.setCentralWidget(table_header)
-        # table_header.setFixedWidth(1920)
-        table_header.setFixedHeight(21)
+        header_table = LPHeaderTable()
+        # self.setCentralWidget(header_table)
+        # header_table.setFixedWidth(1920)
+        header_table.setFixedHeight(21)
 
-        table = LPTable(settings.test_matrix)
+        table = LPTable(settings.test_matrix, header_table)
         # self.setCentralWidget(table)
         # table.setFixedWidth(1920)
         # table.setFixedHeight(1080 - 60)
@@ -213,7 +223,7 @@ class MyMainWindow(QMainWindow):
         # pushbutton_1.setText('First')
         # main_layout.addWidget(pushbutton_1)
 
-        main_layout.addWidget(table_header)
+        main_layout.addWidget(header_table)
         main_layout.addWidget(table)
 
         main_widget = QWidget()
