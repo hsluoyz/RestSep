@@ -117,9 +117,9 @@ class LPTable(QTableWidget):
             vlist.append(str(i) + ":" + settings.case_list[i])
         self.setVerticalHeaderLabels(vlist)
 
-        for i in range(settings.case_count):
-            header_item = self.verticalHeaderItem(i)
-            header_item.setToolTip(settings.case_list[i])
+        # for i in range(settings.case_count):
+        #     header_item = self.verticalHeaderItem(i)
+        #     header_item.setToolTip(settings.case_list[i])
 
         vheader = self.verticalHeader()
         vheader.setFixedWidth(350)
@@ -151,10 +151,36 @@ class MyMainWindow(QMainWindow):
         self.connect(self, SIGNAL('closeEmitApp()'), SLOT('close()'))
 
         table = LPTable(settings.test_matrix)
-        self.setCentralWidget(table)
+        # self.setCentralWidget(table)
+        # table.setFixedWidth(1920)
+        # table.setFixedHeight(1080 - 60)
+        table.setCornerButtonEnabled(False)
+        # table.setGeometry(QRect(0, 0, 200, 200))
+
+        table2 = LPTable(settings.test_matrix)
+        # self.setCentralWidget(table2)
+
+        main_layout = QVBoxLayout()
+        # main_layout = self.layout()
+        main_layout.setMargin(5)
+        main_layout.setSpacing(0)
+        main_layout.setSizeConstraint(QLayout.SetMaximumSize)
+
+        # pushbutton_1 = QPushButton(self)
+        # pushbutton_1.setText('First')
+        # main_layout.addWidget(pushbutton_1)
+
+        main_layout.addWidget(table2)
+        main_layout.addWidget(table)
+
+        main_widget = QWidget()
+        main_widget.setLayout(main_layout)
+        self.setCentralWidget(main_widget)
+
+        # self.setLayout(main_layout)
 
         self.showMaximized()
-        self.show()
+        # self.show()
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Escape:
