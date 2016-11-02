@@ -148,11 +148,17 @@ class MyMainWindow(QMainWindow):
         # textEdit = QTextEdit()
         # self.setCentralWidget(textEdit)
 
+        self.connect(self, SIGNAL('closeEmitApp()'), SLOT('close()'))
+
         table = LPTable(settings.test_matrix)
         self.setCentralWidget(table)
 
         self.showMaximized()
         self.show()
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Escape:
+            self.emit(SIGNAL('closeEmitApp()'))
 
 
 def run_gui(args):
