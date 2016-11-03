@@ -10,7 +10,7 @@ import main
 
 def get_path_head(api_name):
     api_item_list = api_name.split('|')[0].split('/')
-    return api_item_list[0]
+    return api_item_list[0].strip()
 
 
 def get_method(api_name):
@@ -192,34 +192,31 @@ class LPHeaderTable(QTableWidget):
     def __init__(self):
         QTableWidget.__init__(self, settings.case_count, settings.api_count)
         self.set_data()
-        self.resizeColumnsToContents()
-        self.resizeRowsToContents()
+        # self.resizeColumnsToContents()
+        # self.resizeRowsToContents()
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
 
-        # headerView = RotatedHeaderView()
-        # self.setHorizontalHeader(headerView)
-        for i in range(settings.api_count):
-            self.setColumnWidth(i, 20)
-
-        # self.setMouseTracking(True)
-        #
-        # self.current_hover = [0, 0]
-        # self.itemEntered.connect(self.header_hover)
-        # self.horizontalHeader().enterEvent.connect(self.header_hover)
-
-        # self.filter = HeaderViewFilter(self, self.horizontalHeader())
-        # self.horizontalHeader().setMouseTracking(True)
-        # self.horizontalHeader().installEventFilter(self.filter)
+        # for i in range(settings.api_count):
+        #     self.setColumnWidth(i, 20)
 
     def set_data(self):
         # Column header
-        hlist = []
-        self.setHorizontalHeaderLabels(settings.api_list)
+        hlist_combined = []
+        cur = -1
+        # self.setHorizontalHeaderLabels(settings.api_list)
         for i in range(settings.api_count):
-            hlist.append(str(i))
-            # hlist.append(str(i) + ":" + settings.api_list[i])
-        self.setHorizontalHeaderLabels(hlist)
+            # hlist.append(get_path_head(settings.api_list[i]))
+            if cur != -1 and hlist_combined[cur][0] == get_path_head(settings.api_list[i]):
+                hlist_combined[cur][2] = i + 1
+            else:
+                hlist_combined.append([get_path_head(settings.api_list[i]), i, i + 1])
+                cur += 1
+
+        for i in range(len(hlist_combined)):
+            self.horizontalHeader().resizeSection(i, 20 * (hlist_combined[i][2] - hlist_combined[i][1]))
+            # print hlist_combined[i]
+
 
         # for i in range(settings.api_count):
         #     header_item = self.horizontalHeaderItem(i)
@@ -229,6 +226,7 @@ class LPHeaderTable(QTableWidget):
         vheader.setFixedWidth(350)
 
         self.setRowCount(0)
+        self.setColumnCount(len(hlist_combined))
 
 
 class MyMainWindow(QMainWindow):
