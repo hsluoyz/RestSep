@@ -7,6 +7,9 @@ from PyQt4.QtGui import *
 import settings
 import main
 
+app = None
+main_window = None
+
 
 def get_path_head(api_name):
     api_item_list = api_name.split('|')[0].split('/')
@@ -260,6 +263,9 @@ class LPHeaderTable(QTableWidget):
 class MyMainWindow(QMainWindow):
     def __init__(self):
         super(MyMainWindow, self).__init__()
+
+        self.header_table = None
+        self.table = None
         self.init_ui()
 
     def init_ui(self):
@@ -271,17 +277,17 @@ class MyMainWindow(QMainWindow):
 
         self.connect(self, SIGNAL('closeEmitApp()'), SLOT('close()'))
 
-        header_table = LPHeaderTable()
+        self.header_table = LPHeaderTable()
         # self.setCentralWidget(header_table)
         # header_table.setFixedWidth(1920)
-        header_table.setFixedHeight(21)
+        self.header_table.setFixedHeight(21)
 
-        table = LPTable(header_table)
-        table.set_data(settings.test_matrix)
+        self.table = LPTable(self.header_table)
+        # self.table.set_data(settings.test_matrix)
         # self.setCentralWidget(table)
         # table.setFixedWidth(1920)
         # table.setFixedHeight(1080 - 60)
-        table.setCornerButtonEnabled(False)
+        self.table.setCornerButtonEnabled(False)
         # table.setGeometry(QRect(0, 0, 200, 200))
 
         main_layout = QVBoxLayout()
@@ -294,8 +300,8 @@ class MyMainWindow(QMainWindow):
         # pushbutton_1.setText('First')
         # main_layout.addWidget(pushbutton_1)
 
-        main_layout.addWidget(header_table)
-        main_layout.addWidget(table)
+        main_layout.addWidget(self.header_table)
+        main_layout.addWidget(self.table)
 
         main_widget = QWidget()
         main_widget.setLayout(main_layout)
@@ -303,15 +309,25 @@ class MyMainWindow(QMainWindow):
 
         # self.setLayout(main_layout)
 
-        self.showMaximized()
+        # self.showMaximized()
         # self.show()
+
+    def set_data(self, matrix):
+        self.table.set_data(matrix)
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Escape:
             self.emit(SIGNAL('closeEmitApp()'))
 
 
-def run_gui(args):
+def set_data(matrix):
+    main_window.set_data(matrix)
+
+
+def start_gui(args):
+    global app
+    global main_window
+
     app = QApplication(args)
     # won't work on windows style.
 
@@ -330,6 +346,13 @@ def run_gui(args):
     # table.showMaximized()
     # table.show()
 
+    # set_data(settings.test_matrix)
+    main_window.showMaximized()
+
+
+def end_gui():
+    global app
+
     sys.exit(app.exec_())
 
 
@@ -338,7 +361,11 @@ if __name__ == "__main__":
     #     print style
 
     main.do_init()
-    run_gui(sys.argv)
+    start_gui(sys.argv)
+
+    set_data(settings.test_matrix)
+
+    end_gui()
 
     # print get_path_head('os-agents/%NAME% | POST')
     # print get_method('os-agents/%NAME% | POST')
