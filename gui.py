@@ -321,7 +321,8 @@ class MyMainWindow(QMainWindow):
 
 
 def set_data(matrix):
-    main_window.set_data(matrix)
+    if main_window:
+        main_window.set_data(matrix)
 
 
 def start_gui(args):
@@ -364,6 +365,8 @@ if __name__ == "__main__":
     start_gui(sys.argv)
 
     set_data(settings.test_matrix)
+    # main.do_init_generation()
+    # main.do_evolve_generation()
 
     end_gui()
 

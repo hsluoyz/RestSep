@@ -6,6 +6,7 @@ import random
 import settings
 import test
 import ga
+import gui
 
 
 capacity = 100
@@ -121,10 +122,19 @@ def do_demo():
     # print c
 
 
+def do_init_generation():
+    for i in range(capacity):
+        matrix_list.append(ga.init_random_matrix(settings.category_max_count, settings.api_count))
+    evaluate_matrix_list()
+    sort_matrix_list()
+    # print "\n*****************************************************"
+    # print_result_from_matrix_list()
+
+
 # 20% - mutate
 # 40% - no change
 # 40% - crossover
-def do_evolve():
+def do_evolve_once():
     mutate_ratio = 0.2
     crossover_ratio = 0.4
 
@@ -143,17 +153,16 @@ def do_evolve():
     del score_list[-eliminate_size:]
 
 
+def do_evolve_generation():
+    for i in range(400):
+        do_evolve_once()
+        print_result_from_matrix_list()
+        gui.set_data(matrix_list[0])
+
+
 if __name__ == '__main__':
     do_init()
     do_demo()
 
-    for i in range(capacity):
-        matrix_list.append(ga.init_random_matrix(settings.category_max_count, settings.api_count))
-    evaluate_matrix_list()
-    sort_matrix_list()
-    print "\n*****************************************************"
-    print_result_from_matrix_list()
-
-    for i in range(400):
-        do_evolve()
-        print_result_from_matrix_list()
+    do_init_generation()
+    do_evolve_generation()
