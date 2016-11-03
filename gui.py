@@ -133,11 +133,21 @@ class LPTable(QTableWidget):
         self.horizontalHeader().setMouseTracking(True)
         self.horizontalHeader().installEventFilter(self.filter)
 
+        # self.header_table.horizontalScrollBar().setMinimum(self.horizontalScrollBar().minimum())
+        # self.header_table.horizontalScrollBar().setMaximum(self.horizontalScrollBar().maximum())
+
         self.connect(self.horizontalScrollBar(), SIGNAL("valueChanged(int)"), self.sync_scroll)
 
     def sync_scroll(self):
         slide_value = self.horizontalScrollBar().value()
-        # print slide_value
+
+        # self.header_table.horizontalScrollBar().setMinimum(self.horizontalScrollBar().minimum())
+        # self.header_table.horizontalScrollBar().setMaximum(self.horizontalScrollBar().maximum())
+        #
+        # print "hmin = %d, hmax = %d, hcur = %d, hstep = %d" %\
+        #       (self.header_table.horizontalScrollBar().minimum(), self.header_table.horizontalScrollBar().maximum(), self.header_table.horizontalScrollBar().value(), self.header_table.horizontalScrollBar().singleStep())
+        # print "min = %d, max = %d, cur = %d, step = %d" %\
+        #       (self.horizontalScrollBar().minimum(), self.horizontalScrollBar().maximum(), slide_value, self.horizontalScrollBar().singleStep())
         self.header_table.horizontalScrollBar().setValue(slide_value)
         # self.sliderBar2.setValue(slide_value)
 
