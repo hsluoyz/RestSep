@@ -109,11 +109,10 @@ class GroupHeaderViewFilter(QObject):
 
 
 class LPTable(QTableWidget):
-    def __init__(self, matrix, header_table):
+    def __init__(self, header_table):
         QTableWidget.__init__(self, settings.case_count, settings.api_count)
-        self.matrix = matrix
         self.header_table = header_table
-        self.set_data()
+        self.set_headers()
         self.resizeColumnsToContents()
         self.resizeRowsToContents()
 
@@ -151,25 +150,7 @@ class LPTable(QTableWidget):
         self.header_table.horizontalScrollBar().setValue(slide_value)
         # self.sliderBar2.setValue(slide_value)
 
-    # def header_hover(self, row):
-    #     print str(row)
-    #
-    #     QToolTip.hideText()
-    #     QToolTip.showText(QCursor.pos(), "aaa")
-    #
-    # def cell_hover(self, row, column):
-    #     item = self.item(row, column)
-    #     print str(row) + ", " + str(column)
-    #     old_item = self.item(self.current_hover[0], self.current_hover[1])
-    #     if self.current_hover != [row, column]:
-    #         old_item.setBackground(QBrush(QColor('white')))
-    #         item.setBackground(QBrush(QColor('yellow')))
-    #     self.current_hover = [row, column]
-    #
-    #     QToolTip.hideText()
-    #     QToolTip.showText(QCursor.pos(), "aaa")
-
-    def set_data(self):
+    def set_headers(self):
         # Column header
         hlist = []
         # self.setHorizontalHeaderLabels(settings.api_list)
@@ -213,11 +194,12 @@ class LPTable(QTableWidget):
         vheader = self.verticalHeader()
         vheader.setFixedWidth(350)
 
+    def set_data(self, matrix):
         # Items
-        row_size, col_size = self.matrix.shape
+        row_size, col_size = matrix.shape
         for i in range(row_size):
             for j in range(col_size):
-                value = self.matrix[i, j]
+                value = matrix[i, j]
                 new_item = QTableWidgetItem(str(value))
                 if value == 1:
                     new_item.setBackground(QColor(255, 50, 50))
@@ -227,10 +209,10 @@ class LPTable(QTableWidget):
 
 class LPHeaderTable(QTableWidget):
     def __init__(self):
-        QTableWidget.__init__(self, settings.case_count, settings.api_count)
+        QTableWidget.__init__(self)
 
         self.hlist_combined_name = []
-        self.set_data()
+        self.set_headers()
         # self.resizeColumnsToContents()
         # self.resizeRowsToContents()
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -244,7 +226,7 @@ class LPHeaderTable(QTableWidget):
         self.horizontalHeader().setMouseTracking(True)
         self.horizontalHeader().installEventFilter(self.filter)
 
-    def set_data(self):
+    def set_headers(self):
         # Column header
         hlist_combined = []
         cur = -1
@@ -294,7 +276,8 @@ class MyMainWindow(QMainWindow):
         # header_table.setFixedWidth(1920)
         header_table.setFixedHeight(21)
 
-        table = LPTable(settings.test_matrix, header_table)
+        table = LPTable(header_table)
+        table.set_data(settings.test_matrix)
         # self.setCentralWidget(table)
         # table.setFixedWidth(1920)
         # table.setFixedHeight(1080 - 60)
