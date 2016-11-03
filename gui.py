@@ -49,6 +49,7 @@ class RotatedHeaderView(QHeaderView):
 class HeaderViewFilter(QObject):
     def __init__(self, parent, header, *args):
         super(HeaderViewFilter, self).__init__(parent, *args)
+        self.parent = parent
         self.header = header
         self.prev_logical_index = -1
 
@@ -82,6 +83,31 @@ class HeaderViewFilter(QObject):
         # you could emit a signal here if you wanted
 
 
+class GroupHeaderViewFilter(QObject):
+    def __init__(self, parent, header, *args):
+        super(GroupHeaderViewFilter, self).__init__(parent, *args)
+        self.parent = parent
+        self.header = header
+        self.prev_logical_index = -1
+
+    def eventFilter(self, object, event):
+        # print "haha " + str(event.type())
+        if event.type() == QEvent.CursorChange or event.type() == QEvent.Enter:
+            local_pos = self.header.mapFromGlobal(QCursor.pos())
+            # print local_pos
+            logical_index = self.header.logicalIndexAt(local_pos)
+            # print "prev_logical_index = %d, logical_index = %d" %(self.prev_logical_index, logical_index)
+            if self.prev_logical_index != logical_index:
+                QToolTip.hideText()
+                QToolTip.showText(QCursor.pos(), self.parent.hlist_combined_name[logical_index])
+            self.prev_logical_index = logical_index
+        elif event.type() == QEvent.Leave:
+            QToolTip.hideText()
+            self.prev_logical_index = -1
+        return False
+        # you could emit a signal here if you wanted
+
+
 class LPTable(QTableWidget):
     def __init__(self, matrix, header_table):
         QTableWidget.__init__(self, settings.case_count, settings.api_count)
@@ -102,6 +128,7 @@ class LPTable(QTableWidget):
         # self.itemEntered.connect(self.header_hover)
         # self.horizontalHeader().enterEvent.connect(self.header_hover)
 
+        # Add the tooltips
         self.filter = HeaderViewFilter(self, self.horizontalHeader())
         self.horizontalHeader().setMouseTracking(True)
         self.horizontalHeader().installEventFilter(self.filter)
@@ -191,6 +218,8 @@ class LPTable(QTableWidget):
 class LPHeaderTable(QTableWidget):
     def __init__(self):
         QTableWidget.__init__(self, settings.case_count, settings.api_count)
+
+        self.hlist_combined_name = []
         self.set_data()
         # self.resizeColumnsToContents()
         # self.resizeRowsToContents()
@@ -200,10 +229,14 @@ class LPHeaderTable(QTableWidget):
         # for i in range(settings.api_count):
         #     self.setColumnWidth(i, 20)
 
+        # Add the tooltips
+        self.filter = GroupHeaderViewFilter(self, self.horizontalHeader())
+        self.horizontalHeader().setMouseTracking(True)
+        self.horizontalHeader().installEventFilter(self.filter)
+
     def set_data(self):
         # Column header
         hlist_combined = []
-        hlist_combined_name = []
         cur = -1
         # self.setHorizontalHeaderLabels(settings.api_list)
         for i in range(settings.api_count):
@@ -212,11 +245,11 @@ class LPHeaderTable(QTableWidget):
                 hlist_combined[cur][2] = i + 1
             else:
                 hlist_combined.append([get_path_head(settings.api_list[i]), i, i + 1])
-                hlist_combined_name.append(get_path_head(settings.api_list[i]))
+                self.hlist_combined_name.append(get_path_head(settings.api_list[i]))
                 cur += 1
 
         self.setColumnCount(len(hlist_combined))
-        self.setHorizontalHeaderLabels(hlist_combined_name)
+        self.setHorizontalHeaderLabels(self.hlist_combined_name)
         for i in range(len(hlist_combined)):
             self.horizontalHeader().resizeSection(i, 20 * (hlist_combined[i][2] - hlist_combined[i][1]))
             # print hlist_combined[i]
