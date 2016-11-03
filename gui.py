@@ -203,6 +203,7 @@ class LPHeaderTable(QTableWidget):
     def set_data(self):
         # Column header
         hlist_combined = []
+        hlist_combined_name = []
         cur = -1
         # self.setHorizontalHeaderLabels(settings.api_list)
         for i in range(settings.api_count):
@@ -211,8 +212,11 @@ class LPHeaderTable(QTableWidget):
                 hlist_combined[cur][2] = i + 1
             else:
                 hlist_combined.append([get_path_head(settings.api_list[i]), i, i + 1])
+                hlist_combined_name.append(get_path_head(settings.api_list[i]))
                 cur += 1
 
+        self.setColumnCount(len(hlist_combined))
+        self.setHorizontalHeaderLabels(hlist_combined_name)
         for i in range(len(hlist_combined)):
             self.horizontalHeader().resizeSection(i, 20 * (hlist_combined[i][2] - hlist_combined[i][1]))
             # print hlist_combined[i]
@@ -226,7 +230,6 @@ class LPHeaderTable(QTableWidget):
         vheader.setFixedWidth(350)
 
         self.setRowCount(0)
-        self.setColumnCount(len(hlist_combined))
 
 
 class MyMainWindow(QMainWindow):
