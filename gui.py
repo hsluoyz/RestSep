@@ -53,18 +53,33 @@ class HeaderViewFilter(QObject):
         self.prev_logical_index = -1
 
     def eventFilter(self, object, event):
-        if event.type() == QEvent.HoverMove:
-            logical_index = self.header.logicalIndexAt(event.pos())
+        # print "haha " + str(event.type())
+        # if event.type() == QEvent.HoverMove:
+        #     logical_index = self.header.logicalIndexAt(event.pos())
+        #     if self.prev_logical_index != logical_index:
+        #         # print "haha " + str(logical_index)
+        #         QToolTip.hideText()
+        #         QToolTip.showText(QCursor.pos(), settings.api_list[logical_index])
+        #     self.prev_logical_index = logical_index
+        # elif event.type() == QEvent.HoverLeave:
+        #     QToolTip.hideText()
+        #     self.prev_logical_index = -1
+
+        # print "haha " + str(event.type())
+        if event.type() == QEvent.CursorChange or event.type() == QEvent.Enter:
+            local_pos = self.header.mapFromGlobal(QCursor.pos())
+            # print local_pos
+            logical_index = self.header.logicalIndexAt(local_pos)
+            # print "prev_logical_index = %d, logical_index = %d" %(self.prev_logical_index, logical_index)
             if self.prev_logical_index != logical_index:
-                # print "haha " + str(logical_index)
                 QToolTip.hideText()
                 QToolTip.showText(QCursor.pos(), settings.api_list[logical_index])
             self.prev_logical_index = logical_index
-        elif event.type() == QEvent.HoverLeave:
+        elif event.type() == QEvent.Leave:
             QToolTip.hideText()
             self.prev_logical_index = -1
         return False
-            # you could emit a signal here if you wanted
+        # you could emit a signal here if you wanted
 
 
 class LPTable(QTableWidget):
@@ -280,7 +295,7 @@ def run_gui(args):
     # CDE
     # Plastique
     # Cleanlooks
-    app.setStyle(QStyleFactory.create('Cleanlooks'))
+    app.setStyle(QStyleFactory.create('Plastique'))
 
     main_window = MyMainWindow()
 
