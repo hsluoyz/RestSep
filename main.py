@@ -157,7 +157,7 @@ def do_evolve_generation(set_data_func):
         do_evolve_once()
         print_result_from_matrix_list()
         if set_data_func:
-            set_data_func(matrix_list[0])
+            set_data_func(ga.remove_empty_rows_from_matrix(matrix_list[0]))
 
 
 if __name__ == '__main__':

@@ -13,6 +13,17 @@ def init_random_matrix(row_size, col_size):
     return m
 
 
+def remove_empty_rows_from_matrix(m):
+    row_size, col_size = m.shape
+    row_sums = m.sum(axis=1)
+    new_m = np.empty([0, col_size], dtype=int)
+
+    for i in range(row_size):
+        if row_sums[i] != 0:
+            new_m = np.append(new_m, m[i: i+1, :], axis=0)
+    return new_m
+
+
 def get_category_number(m):
     row_sums = m.sum(axis=1)
     res = 0
@@ -131,6 +142,11 @@ if __name__ == '__main__':
     # l = np.concatenate((m[:, :1], n), axis=1)
     # l[0, 0] = 5
     # print l
+
+    # print m
+    # print n
+    # print crossover_matrix(m, n)
+
     print m
-    print n
-    print crossover_matrix(m, n)
+    m = remove_empty_rows_from_matrix(m)
+    print m
