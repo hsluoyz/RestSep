@@ -24,6 +24,15 @@ def remove_empty_rows_from_matrix(m):
     return new_m
 
 
+def get_covered_api_number(m):
+    col_sums = m.sum(axis=0)
+    res = 0
+    for col_sum in col_sums:
+        if col_sum > 0:
+            res += 1
+    return res
+
+
 def get_category_number(m):
     row_sums = m.sum(axis=1)
     res = 0
@@ -58,6 +67,10 @@ def get_covered_testcase_number(m):
     return res
 
 
+def get_covered_api_score(number):
+    return 100 * number / settings.api_count
+
+
 def get_category_number_score(number):
     return max(100 - 3 * abs(number - settings.api_count / 10), 0)
 
@@ -72,6 +85,7 @@ def get_covered_testcase_score(number):
 
 def evaluate_matrix(m):
     score = 0
+    score += get_covered_api_score(get_covered_api_number(m))
     score += get_category_number_score(get_category_number(m))
     number, overall_number = get_overuse_number(m)
     score += get_overuse_score(number, overall_number)
@@ -79,10 +93,11 @@ def evaluate_matrix(m):
     return score
 
 
-def evaluate_matrix_from_numbers(m, n1, n2, n3):
+def evaluate_matrix_from_numbers(m, n0, n1, n2, n3):
     row_size, col_size = m.shape
 
     score = 0
+    score += get_covered_api_score(n0)
     score += get_category_number_score(n1)
     score += get_overuse_score(n2, (row_size - 1) * col_size)
     score += get_covered_testcase_score(n3)
@@ -100,22 +115,26 @@ def print_matrix(m):
     print res
     print "row size = " + str(row_size) + ", column size = " + str(col_size)
 
+    covered_api_number = get_covered_api_number(m)
     category_number = get_category_number(m)
     overuse_number = get_overuse_number(m)[0]
     covered_testcase_number = get_covered_testcase_number(m)
 
+    print "covered API number = " + str(covered_api_number) + " (expected: " + str(settings.api_count) + ", score: " + str(get_covered_api_score(covered_api_number)) + ")"
     print "category number = " + str(category_number) + " (expected: 10, score: " + str(get_category_number_score(category_number)) + ")"
     print "overuse number = " + str(overuse_number) + " (expected: 0, score: " + str(get_overuse_score(overuse_number, (row_size - 1) * col_size)) + ")"
     print "covered testcase number = " + str(covered_testcase_number) + " (expected: " + str(settings.case_count) + ", score: " + str(get_covered_testcase_score(covered_testcase_number)) + ")"
-    print "final score = " + str(evaluate_matrix_from_numbers(m, category_number, overuse_number, covered_testcase_number)) + "/300"
+    print "final score = " + str(evaluate_matrix_from_numbers(m, covered_api_number, category_number, overuse_number, covered_testcase_number)) + "/400"
 
 
 def get_matrix_description(m):
+    covered_api_number = get_covered_api_number(m)
     category_number = get_category_number(m)
     overuse_number = get_overuse_number(m)[0]
     covered_testcase_number = get_covered_testcase_number(m)
 
-    return "categories: %d, overuse: %d, covered testcases: %d/%d" % (category_number, overuse_number, covered_testcase_number, settings.case_count)
+    return "covered APIs: %d/%d, categories: %d, overuse: %d, covered testcases: %d/%d" %\
+           (covered_api_number, settings.api_count, category_number, overuse_number, covered_testcase_number, settings.case_count)
 
 
 def mutate_matrix(m):

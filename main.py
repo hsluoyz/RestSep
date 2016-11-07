@@ -8,12 +8,13 @@ import test
 import ga
 
 
-capacity = 100
+capacity = 400
 generation = 0
 matrix_list = []
 score_list = []
 top_score = 0
 top_title = ''
+
 
 def print_list(name_list):
     for i in range(0, len(name_list)):
@@ -161,7 +162,7 @@ def do_evolve_generation(set_data_func):
         print_result_from_matrix_list()
         if set_data_func and top_score < score_list[0]:
             top_score = score_list[0]
-            top_title = "top generation: %d, top score: %d, %s" % (i, top_score, ga.get_matrix_description(matrix_list[0]))
+            top_title = "top generation: %d, top score: %d, %s" % (i + 1, top_score, ga.get_matrix_description(matrix_list[0]))
         set_data_func(ga.remove_empty_rows_from_matrix(matrix_list[0]), "current: %d/%d, %s" % (i, generation_count, top_title))
 
 
