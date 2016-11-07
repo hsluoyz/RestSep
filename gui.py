@@ -323,6 +323,7 @@ class MyMainWindow(QMainWindow):
 
 def set_data(matrix):
     if main_window:
+        main_window.setWindowTitle('RestSep: ' + str(main.top_score))
         main_window.set_data(matrix)
 
 

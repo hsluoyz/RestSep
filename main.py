@@ -12,7 +12,7 @@ capacity = 100
 generation = 0
 matrix_list = []
 score_list = []
-
+top_score = 0
 
 def print_list(name_list):
     for i in range(0, len(name_list)):
@@ -153,11 +153,13 @@ def do_evolve_once():
 
 
 def do_evolve_generation(set_data_func):
+    global top_score
     for i in range(400):
         do_evolve_once()
         print_result_from_matrix_list()
-        if set_data_func:
+        if set_data_func and top_score < score_list[0]:
             set_data_func(ga.remove_empty_rows_from_matrix(matrix_list[0]))
+            top_score = score_list[0]
 
 
 if __name__ == '__main__':
