@@ -314,6 +314,7 @@ class MyMainWindow(QMainWindow):
         # self.show()
 
     def set_data(self, matrix):
+        self.table.clearContents()
         self.table.set_data(matrix)
 
     def keyPressEvent(self, event):
@@ -321,9 +322,9 @@ class MyMainWindow(QMainWindow):
             self.emit(SIGNAL('closeEmitApp()'))
 
 
-def set_data(matrix):
+def set_data(matrix, title):
     if main_window:
-        main_window.setWindowTitle('RestSep: ' + str(main.top_score))
+        main_window.setWindowTitle('RestSep | %s' % (title))
         main_window.set_data(matrix)
 
 

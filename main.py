@@ -158,7 +158,9 @@ def do_evolve_generation(set_data_func):
         do_evolve_once()
         print_result_from_matrix_list()
         if set_data_func and top_score < score_list[0]:
-            set_data_func(ga.remove_empty_rows_from_matrix(matrix_list[0]))
+            set_data_func(ga.remove_empty_rows_from_matrix(matrix_list[0]),
+                          "generation: %d, top score: %d, %s" %
+                          (i, top_score, ga.get_matrix_description(matrix_list[0])))
             top_score = score_list[0]
 
 

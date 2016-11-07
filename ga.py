@@ -110,6 +110,14 @@ def print_matrix(m):
     print "final score = " + str(evaluate_matrix_from_numbers(m, category_number, overuse_number, covered_testcase_number)) + "/300"
 
 
+def get_matrix_description(m):
+    category_number = get_category_number(m)
+    overuse_number = get_overuse_number(m)[0]
+    covered_testcase_number = get_covered_testcase_number(m)
+
+    return "categories: %d, overuse: %d, covered testcases: %d/%d" % (category_number, overuse_number, covered_testcase_number, settings.case_count)
+
+
 def mutate_matrix(m):
     row_size, col_size = m.shape
 
