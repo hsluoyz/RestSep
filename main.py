@@ -154,7 +154,7 @@ def do_evolve_once():
     del score_list[-eliminate_size:]
 
 
-def do_evolve_generation(set_data_func):
+def do_evolve_generation(set_data_func, set_title_func):
     global top_score, top_title
     generation_count = 600
     for i in range(generation_count):
@@ -163,7 +163,8 @@ def do_evolve_generation(set_data_func):
         if set_data_func and top_score < score_list[0]:
             top_score = score_list[0]
             top_title = "top generation: %d, top score: %d, %s" % (i + 1, top_score, ga.get_matrix_description(matrix_list[0]))
-        set_data_func(ga.remove_empty_rows_from_matrix(matrix_list[0]), "current: %d/%d, %s" % (i, generation_count, top_title))
+            set_data_func(ga.remove_empty_rows_from_matrix(matrix_list[0]))
+        set_title_func("current: %d/%d, %s" % (i + 1, generation_count, top_title))
 
 
 

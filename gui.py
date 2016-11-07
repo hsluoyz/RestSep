@@ -322,10 +322,12 @@ class MyMainWindow(QMainWindow):
             self.emit(SIGNAL('closeEmitApp()'))
 
 
-def set_data(matrix, title):
-    if main_window:
-        main_window.setWindowTitle('RestSep | %s' % (title))
-        main_window.set_data(matrix)
+def set_title(title):
+    main_window.setWindowTitle('RestSep | %s' % (title))
+
+
+def set_data(matrix):
+    main_window.set_data(matrix)
 
 
 def start_gui(args):
@@ -362,7 +364,7 @@ def end_gui():
 def do_compute():
     # set_data(settings.test_matrix)
     main.do_init_generation()
-    main.do_evolve_generation(set_data)
+    main.do_evolve_generation(set_data, set_title)
 
 if __name__ == "__main__":
     # for style in QStyleFactory.keys():
