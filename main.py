@@ -6,7 +6,6 @@ import random
 import settings
 import test
 import ga
-import gui
 
 
 capacity = 100
@@ -153,11 +152,12 @@ def do_evolve_once():
     del score_list[-eliminate_size:]
 
 
-def do_evolve_generation():
+def do_evolve_generation(set_data_func):
     for i in range(400):
         do_evolve_once()
         print_result_from_matrix_list()
-        gui.set_data(matrix_list[0])
+        if set_data_func:
+            set_data_func(matrix_list[0])
 
 
 if __name__ == '__main__':

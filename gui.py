@@ -1,6 +1,7 @@
 # coding=gbk
 
 import sys
+import threading
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
@@ -326,8 +327,7 @@ def set_data(matrix):
 
 
 def start_gui(args):
-    global app
-    global main_window
+    global app, main_window
 
     app = QApplication(args)
     # won't work on windows style.
@@ -357,6 +357,11 @@ def end_gui():
     sys.exit(app.exec_())
 
 
+def do_compute():
+    # set_data(settings.test_matrix)
+    main.do_init_generation()
+    main.do_evolve_generation(set_data)
+
 if __name__ == "__main__":
     # for style in QStyleFactory.keys():
     #     print style
@@ -364,9 +369,10 @@ if __name__ == "__main__":
     main.do_init()
     start_gui(sys.argv)
 
-    set_data(settings.test_matrix)
-    # main.do_init_generation()
-    # main.do_evolve_generation()
+    thread = threading.Thread(target=do_compute)
+    thread.setDaemon(True)
+    thread.start()
+    # do_compute()
 
     end_gui()
 
