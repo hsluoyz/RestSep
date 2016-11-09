@@ -54,14 +54,10 @@ def init_from_test():
     regex_name = re.compile(pattern_name)
 
     filepath = "J:/OpenStack国家863项目/我的论文/RestSep/实验数据/"
-    # filename = "stack.log.keystone"
-    filename = "stack.log.nova"
-    # filename = "stack.log.glance"
-    # filename = "stack.log.cinder"
 
     current_line = ""
 
-    for line in open(filepath + filename):
+    for line in open(filepath + settings.filename):
         # print "AAA" + line + "BBB"
         if line.startswith("#"):
             line = line.strip("\n").strip("#").lstrip('test_')

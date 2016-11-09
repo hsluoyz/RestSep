@@ -8,7 +8,7 @@ import test
 import ga
 
 
-capacity = 400
+capacity = 200
 generation = 0
 matrix_list = []
 score_list = []
@@ -156,7 +156,7 @@ def do_evolve_once():
 
 def do_evolve_generation(set_data_func, set_title_func):
     global top_score, top_title
-    generation_count = 600
+    generation_count = 10000
     for i in range(generation_count):
         do_evolve_once()
         print_result_from_matrix_list()
@@ -164,8 +164,7 @@ def do_evolve_generation(set_data_func, set_title_func):
             top_score = score_list[0]
             top_title = "top generation: %d, top score: %d, %s" % (i + 1, top_score, ga.get_matrix_description(matrix_list[0]))
             set_data_func(ga.remove_empty_rows_from_matrix(matrix_list[0]))
-        set_title_func("current: %d/%d, %s" % (i + 1, generation_count, top_title))
-
+        set_title_func("input: %s, current: %d/%d, %s" % (settings.filename, i + 1, generation_count, top_title))
 
 
 if __name__ == '__main__':
