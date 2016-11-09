@@ -80,7 +80,7 @@ def get_overuse_score(number, overall_number):
 
 
 def get_covered_testcase_score(number):
-    return 100 * number / settings.case_count
+    return 200 * number / settings.case_count
 
 
 def evaluate_matrix(m):
@@ -124,7 +124,7 @@ def print_matrix(m):
     print "category number = " + str(category_number) + " (expected: 10, score: " + str(get_category_number_score(category_number)) + ")"
     print "overuse number = " + str(overuse_number) + " (expected: 0, score: " + str(get_overuse_score(overuse_number, (row_size - 1) * col_size)) + ")"
     print "covered testcase number = " + str(covered_testcase_number) + " (expected: " + str(settings.case_count) + ", score: " + str(get_covered_testcase_score(covered_testcase_number)) + ")"
-    print "final score = " + str(evaluate_matrix_from_numbers(m, covered_api_number, category_number, overuse_number, covered_testcase_number)) + "/400"
+    print "final score = " + str(evaluate_matrix_from_numbers(m, covered_api_number, category_number, overuse_number, covered_testcase_number)) + "/500"
 
 
 def get_matrix_description(m):
