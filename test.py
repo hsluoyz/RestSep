@@ -2,6 +2,7 @@
 
 import re
 import numpy as np
+import pprint
 
 import settings
 
@@ -196,8 +197,12 @@ if __name__ == '__main__':
     #
     # print np.insert(m, 3, values=n[0, :], axis=0)
 
-    m = np.array([[2, 1, 3], [0, 0, 0], [1, 1, 1]])
-    print m
-    m = np.dot(m, np.ones([3, 1]))
-    # m = m.transpose()
-    print m
+    # m = np.array([[2, 1, 3], [0, 0, 0], [1, 1, 1]])
+    # print m
+    # m = np.dot(m, np.ones([3, 1]))
+    # # m = m.transpose()
+    # print m
+
+    init_from_test()
+    pprint.pprint(settings.case_list)
+    pprint.pprint(settings.api_list)
