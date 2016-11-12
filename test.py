@@ -54,11 +54,9 @@ def init_from_test():
     # |os-extra_specs/|os-hosts/|os-hypervisors/)[^/]+"
     regex_name = re.compile(pattern_name)
 
-    filepath = "J:/OpenStack国家863项目/我的论文/RestSep/实验数据/"
-
     current_line = ""
 
-    for line in open(filepath + settings.filename):
+    for line in open(settings.filepath + settings.filename):
         # print "AAA" + line + "BBB"
         if line.startswith("#"):
             line = line.strip("\n").strip("#").lstrip('test_')
