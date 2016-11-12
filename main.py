@@ -41,14 +41,6 @@ def print_result_from_matrix(m):
     print "Category number = " + str(len(res))
 
 
-def evaluate_matrix_list():
-    global score_list
-    score_list = []
-
-    for m in matrix_list:
-        score_list.append(int(ga.evaluate_matrix(m)))
-
-
 def sort_matrix_list():
     global score_list
     global matrix_list
@@ -61,9 +53,10 @@ def sort_matrix_list():
 
 
 def print_result_from_matrix_list():
+    valid_score_list = score_list[:population]
     print "matrix list of %d instances result, generation = %d, average = %d, max = %d, min = %d" %\
-          (len(score_list), generation, sum(score_list) / len(score_list), max(score_list), min(score_list))
-    print score_list
+          (len(valid_score_list), generation, sum(valid_score_list) / len(valid_score_list), max(valid_score_list), min(valid_score_list))
+    print valid_score_list
 
 
 def do_init():
@@ -126,12 +119,38 @@ def do_demo():
 
 
 def do_init_generation():
+    global score_list
+
     for i in range(population):
         matrix_list.append(ga.init_random_matrix(settings.category_max_count, settings.api_count))
-    evaluate_matrix_list()
-    sort_matrix_list()
+    score_list = [0] * int((1 + crossover_ratio / 2) * population)
+    # do_evaluate()
+    # sort_matrix_list()
     # print "\n*****************************************************"
     # print_result_from_matrix_list()
+
+
+def do_mutate(start, end):
+    for i in range(start, end):
+        ga.mutate_matrix(matrix_list[i])
+
+
+def do_crossover(start, end):
+    for i in range(start, end, 2):
+        matrix_list.append(ga.crossover_matrix(matrix_list[i], matrix_list[i + 1]))
+
+
+def do_evaluate(start, end):
+    global score_list
+
+    for i in range(start, end):
+        score_list[i] = int(ga.evaluate_matrix(matrix_list[i]))
+
+
+def do_eliminate():
+    eliminate_size = len(matrix_list) - population
+    del matrix_list[-eliminate_size:]
+    # del score_list[-eliminate_size:]
 
 
 # 20% - mutate
@@ -141,16 +160,13 @@ def do_evolve_once():
     global generation
     generation += 1
     random.shuffle(matrix_list)
-    for i in range(0, int(mutate_ratio * population)):
-        ga.mutate_matrix(matrix_list[i])
-    for i in range(int((1 - crossover_ratio) * population), population, 2):
-        matrix_list.append(ga.crossover_matrix(matrix_list[i], matrix_list[i + 1]))
 
-    evaluate_matrix_list()
+    do_mutate(0, int(mutate_ratio * population))
+    do_crossover(int((1 - crossover_ratio) * population), population)
+    do_evaluate(0, int((1 + crossover_ratio / 2) * population))
+
     sort_matrix_list()
-    eliminate_size = int(crossover_ratio / 2 * population)
-    del matrix_list[-eliminate_size:]
-    del score_list[-eliminate_size:]
+    do_eliminate()
 
 
 def do_evolve_generation(set_data_func, set_title_func):
