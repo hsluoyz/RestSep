@@ -9,7 +9,8 @@ import ga
 
 mutate_ratio = 0.2
 crossover_ratio = 0.4
-population = 200
+population = 100
+population_limit = int((1 + crossover_ratio / 2) * population)
 
 generation = 0
 matrix_list = []
@@ -121,9 +122,9 @@ def do_demo():
 def do_init_generation():
     global score_list
 
-    for i in range(population):
+    for i in range(population_limit):
         matrix_list.append(ga.init_random_matrix(settings.category_max_count, settings.api_count))
-    score_list = [0] * int((1 + crossover_ratio / 2) * population)
+    score_list = [0] * population_limit
     # do_evaluate()
     # sort_matrix_list()
     # print "\n*****************************************************"
@@ -137,7 +138,7 @@ def do_mutate(start, end):
 
 def do_crossover(start, end):
     for i in range(start, end, 2):
-        matrix_list.append(ga.crossover_matrix(matrix_list[i], matrix_list[i + 1]))
+        matrix_list[population + int((i - (1 - crossover_ratio) * population) / 2)] = ga.crossover_matrix(matrix_list[i], matrix_list[i + 1])
 
 
 def do_evaluate(start, end):
@@ -147,10 +148,10 @@ def do_evaluate(start, end):
         score_list[i] = int(ga.evaluate_matrix(matrix_list[i]))
 
 
-def do_eliminate():
-    eliminate_size = len(matrix_list) - population
-    del matrix_list[-eliminate_size:]
-    # del score_list[-eliminate_size:]
+# def do_eliminate():
+#     eliminate_size = len(matrix_list) - population
+#     del matrix_list[-eliminate_size:]
+#     del score_list[-eliminate_size:]
 
 
 # 20% - mutate
@@ -159,14 +160,16 @@ def do_eliminate():
 def do_evolve_once():
     global generation
     generation += 1
-    random.shuffle(matrix_list)
+
+    # random.shuffle(matrix_list)
+    matrix_list[:population] = random.sample(matrix_list[:population], population)
 
     do_mutate(0, int(mutate_ratio * population))
     do_crossover(int((1 - crossover_ratio) * population), population)
-    do_evaluate(0, int((1 + crossover_ratio / 2) * population))
+    do_evaluate(0, population_limit)
 
     sort_matrix_list()
-    do_eliminate()
+    # do_eliminate()
 
 
 def do_evolve_generation(set_data_func, set_title_func):
