@@ -2,6 +2,7 @@
 
 from pprint import pprint
 import random
+import multiprocessing
 
 import settings
 import test
@@ -11,6 +12,8 @@ mutate_ratio = 0.2
 crossover_ratio = 0.4
 population = 100
 population_limit = int((1 + crossover_ratio / 2) * population)
+
+thread_pool = None
 
 generation = 0
 matrix_list = []
@@ -130,6 +133,8 @@ def do_init_generation():
     # print "\n*****************************************************"
     # print_result_from_matrix_list()
 
+    init_thread_pool()
+
 
 def do_mutate(start, end):
     for i in range(start, end):
@@ -177,11 +182,35 @@ def do_evolve_once():
     # do_eliminate()
 
 
+def init_thread_pool():
+    global thread_pool
+    thread_pool = multiprocessing.Pool(processes=10)
+
+
+def do_evolve_once_multi_thread():
+    global generation
+    generation += 1
+
+    matrix_list[:population] = random.sample(matrix_list[:population], population)
+
+    thread_pool.apply_async(do_mutate, (0, int(mutate_ratio * population)))
+    thread_pool.apply_async(do_crossover, (int((1 - crossover_ratio) * population), population))
+
+    # thread_pool.close()
+    # thread_pool.join()
+
+    # do_mutate(0, int(mutate_ratio * population))
+    # do_crossover(int((1 - crossover_ratio) * population), population)
+
+    sort_matrix_list()
+
+
 def do_evolve_generation(set_data_func, set_title_func):
     global top_score, top_title
     generation_count = 10000
     for i in range(generation_count):
         do_evolve_once()
+        # do_evolve_once_multi_thread()
         print_result_from_matrix_list()
         if set_data_func and top_score < score_list[0]:
             top_score = score_list[0]
