@@ -134,11 +134,16 @@ def do_init_generation():
 def do_mutate(start, end):
     for i in range(start, end):
         ga.mutate_matrix(matrix_list[i])
+        # Evaluate the matrix: i
+        score_list[i] = int(ga.evaluate_matrix(matrix_list[i]))
 
 
 def do_crossover(start, end):
     for i in range(start, end, 2):
-        matrix_list[population + int((i - (1 - crossover_ratio) * population) / 2)] = ga.crossover_matrix(matrix_list[i], matrix_list[i + 1])
+        new_i = population + int((i - (1 - crossover_ratio) * population) / 2)
+        matrix_list[new_i] = ga.crossover_matrix(matrix_list[i], matrix_list[i + 1])
+        # Evaluate the matrix: new_i
+        score_list[new_i] = int(ga.evaluate_matrix(matrix_list[new_i]))
 
 
 def do_evaluate(start, end):
@@ -166,7 +171,7 @@ def do_evolve_once():
 
     do_mutate(0, int(mutate_ratio * population))
     do_crossover(int((1 - crossover_ratio) * population), population)
-    do_evaluate(0, population_limit)
+    # do_evaluate(0, population_limit)
 
     sort_matrix_list()
     # do_eliminate()
