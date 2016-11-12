@@ -7,8 +7,10 @@ import settings
 import test
 import ga
 
-
+mutate_ratio = 0.2
+crossover_ratio = 0.4
 population = 200
+
 generation = 0
 matrix_list = []
 score_list = []
@@ -133,12 +135,9 @@ def do_init_generation():
 
 
 # 20% - mutate
-# 40% - no change
 # 40% - crossover
+# 40% - no change
 def do_evolve_once():
-    mutate_ratio = 0.2
-    crossover_ratio = 0.4
-
     global generation
     generation += 1
     random.shuffle(matrix_list)
