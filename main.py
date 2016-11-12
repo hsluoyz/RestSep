@@ -8,7 +8,7 @@ import test
 import ga
 
 
-capacity = 200
+population = 200
 generation = 0
 matrix_list = []
 score_list = []
@@ -124,7 +124,7 @@ def do_demo():
 
 
 def do_init_generation():
-    for i in range(capacity):
+    for i in range(population):
         matrix_list.append(ga.init_random_matrix(settings.category_max_count, settings.api_count))
     evaluate_matrix_list()
     sort_matrix_list()
@@ -142,14 +142,14 @@ def do_evolve_once():
     global generation
     generation += 1
     random.shuffle(matrix_list)
-    for i in range(0, int(mutate_ratio * capacity)):
+    for i in range(0, int(mutate_ratio * population)):
         ga.mutate_matrix(matrix_list[i])
-    for i in range(int((1 - crossover_ratio) * capacity), capacity, 2):
+    for i in range(int((1 - crossover_ratio) * population), population, 2):
         matrix_list.append(ga.crossover_matrix(matrix_list[i], matrix_list[i + 1]))
 
     evaluate_matrix_list()
     sort_matrix_list()
-    eliminate_size = int(crossover_ratio / 2 * capacity)
+    eliminate_size = int(crossover_ratio / 2 * population)
     del matrix_list[-eliminate_size:]
     del score_list[-eliminate_size:]
 
@@ -164,7 +164,7 @@ def do_evolve_generation(set_data_func, set_title_func):
             top_score = score_list[0]
             top_title = "top generation: %d, top score: %d, %s" % (i + 1, top_score, ga.get_matrix_description(matrix_list[0]))
             set_data_func(ga.remove_empty_rows_from_matrix(matrix_list[0]))
-        set_title_func("input: %s, current: %d/%d, %s" % (settings.filename, i + 1, generation_count, top_title))
+        set_title_func("input: %s, population: %d, current: %d/%d, %s" % (settings.filename, population, i + 1, generation_count, top_title))
 
 
 if __name__ == '__main__':
