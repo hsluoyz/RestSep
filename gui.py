@@ -191,9 +191,9 @@ class LPTable(QTableWidget):
             vlist.append(str(i) + ":" + settings.case_list[i])
         self.setVerticalHeaderLabels(vlist)
 
-        # for i in range(settings.case_count):
-        #     header_item = self.verticalHeaderItem(i)
-        #     header_item.setToolTip(settings.case_list[i])
+        for i in range(settings.case_count):
+            header_item = self.verticalHeaderItem(i)
+            header_item.setToolTip(settings.case_list[i])
 
         vheader = self.verticalHeader()
         vheader.setFixedWidth(350)
