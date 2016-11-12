@@ -12,6 +12,7 @@ mutate_ratio = 0.2
 crossover_ratio = 0.4
 population = 100
 population_limit = int((1 + crossover_ratio / 2) * population)
+generation_count = 10000
 
 thread_pool = None
 
@@ -207,7 +208,7 @@ def do_evolve_once_multi_thread():
 
 def do_evolve_generation(set_data_func, set_title_func):
     global top_score, top_title
-    generation_count = 10000
+
     for i in range(generation_count):
         do_evolve_once()
         # do_evolve_once_multi_thread()
