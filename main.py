@@ -21,6 +21,8 @@ matrix_list = []
 score_list = []
 top_score = 0
 top_title = ''
+max_score = 0
+min_score = 0
 
 
 def print_list(name_list):
@@ -58,9 +60,14 @@ def sort_matrix_list():
 
 
 def print_result_from_matrix_list():
+    global max_score, min_score
+
     valid_score_list = score_list[:population]
+    max_score = max(valid_score_list)
+    min_score = min(valid_score_list)
+
     print "matrix list of %d instances result, generation = %d, average = %d, max = %d, min = %d" %\
-          (len(valid_score_list), generation, sum(valid_score_list) / len(valid_score_list), max(valid_score_list), min(valid_score_list))
+          (len(valid_score_list), generation, sum(valid_score_list) / len(valid_score_list), max_score, min_score)
     print valid_score_list
 
 
@@ -218,7 +225,7 @@ def do_evolve_generation(set_data_func, set_title_func):
                 top_score = score_list[0]
                 top_title = "top generation: %d, top score: %d/%d, %s" % (i + 1, top_score, settings.full_score, ga.get_matrix_description(matrix_list[0]))
                 set_data_func(ga.remove_empty_rows_from_matrix(matrix_list[0]))
-            set_title_func("input: %s, population: %d, current: %d/%d, %s" % (settings.filename, population, i + 1, generation_count, top_title))
+            set_title_func("input: %s, population: %d, min/max: (%d, %d), current: %d/%d, %s" % (settings.filename, population, min_score, max_score, i + 1, generation_count, top_title))
 
 
 if __name__ == '__main__':
