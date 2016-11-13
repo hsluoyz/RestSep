@@ -143,7 +143,7 @@ def get_matrix_description(m):
 def mutate_matrix(m):
     row_size, col_size = m.shape
 
-    for k in range(0, 100):
+    for k in range(0, int(row_size * col_size * 0.1)):
         i = random.randint(0, row_size - 1)
         j = random.randint(0, col_size - 1)
         if m[i, j] == 0:
