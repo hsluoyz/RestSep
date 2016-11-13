@@ -227,8 +227,9 @@ def do_evolve_generation(set_data_func, set_title_func):
         if set_data_func:
             if top_score < score_list[0]:
                 top_score = score_list[0]
-                top_title = "top generation: %d, top score: %d/%d, %s" % (i + 1, top_score, settings.full_score, ga.get_matrix_description(matrix_list[0]))
-                set_data_func(ga.remove_empty_rows_from_matrix(ga.get_reduced_matrix(matrix_list[0])))
+                reduced_top_matrix = ga.get_reduced_matrix(matrix_list[0])
+                top_title = "top generation: %d, top score: %d/%d, %s" % (i + 1, top_score, settings.full_score, ga.get_matrix_description(reduced_top_matrix))
+                set_data_func(ga.remove_empty_rows_from_matrix(2 * matrix_list[0] - reduced_top_matrix))
             set_title_func("input: %s, population: %d, min/max: (%d, %d), current: %d/%d, %s" % (settings.filename, population, min_score, max_score, i + 1, generation_count, top_title))
 
 

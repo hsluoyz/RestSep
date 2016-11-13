@@ -99,7 +99,6 @@ def get_reduced_matrix(m):
                 if get_covered_testcase_number_special(new_m) != original_covered:
                     new_m[i, j] = 1
 
-    new_m = 2 * m - new_m
     return new_m
 
 
