@@ -207,6 +207,8 @@ class LPTable(QTableWidget):
                 new_item = QTableWidgetItem(str(value))
                 if value == 1:
                     new_item.setBackground(QColor(255, 50, 50))
+                elif value == 2:
+                    new_item.setBackground(QColor(255, 220, 220))
                 # new_item.setToolTip("aaa")
                 self.setItem(i, j, new_item)
 

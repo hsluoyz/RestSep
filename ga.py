@@ -67,6 +67,42 @@ def get_covered_testcase_number(m):
     return res
 
 
+def get_covered_testcase_number_special(m):
+    row_size, col_size = m.shape
+    test_row_size, test_col_size = settings.test_matrix.shape
+
+    # 1st matrix multiply
+    res = np.dot(settings.test_matrix, np.where(m == 0, 1, 0).transpose())
+    # print res
+
+    # 2nd matrix multiply
+    res = np.dot(np.where(res == 0, 1, 0), np.ones([row_size, 1]))
+
+    # 3rd matrix multiply
+    res = np.dot(np.ones([1, test_row_size]), np.where(res != 0, 1, 0))
+
+    # Get the score.
+    res = int(res[0, 0])
+
+    return res
+
+
+def get_reduced_matrix(m):
+    row_size, col_size = m.shape
+    original_covered = get_covered_testcase_number_special(m)
+    new_m = np.copy(m)
+
+    for i in range(row_size):
+        for j in range(col_size):
+            if new_m[i, j] == 1:
+                new_m[i, j] = 0
+                if get_covered_testcase_number_special(new_m) != original_covered:
+                    new_m[i, j] = 1
+
+    new_m = 2 * m - new_m
+    return new_m
+
+
 def get_uncovered_testcases(m):
     uncovered_testcases = []
 
