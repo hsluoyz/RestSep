@@ -151,6 +151,13 @@ def mutate_matrix(m):
                 m[i, j] = 1
         else:
             m[i, j] = 0
+            # if random.random() < 0.2:
+            #     m[i, j] = 0
+
+    # Clear a random row.
+    # if random.random() < 0.5:
+    #     i = random.randint(0, row_size - 1)
+    #     m[i:] = 0
 
 
 def crossover_matrix(m1, m2):

@@ -119,7 +119,7 @@ def init_lists():
     settings.api_list = list(set(settings.api_list))
     settings.api_list.sort()
     settings.api_count = len(settings.api_list)
-    settings.category_max_count = settings.api_count / 4
+    settings.category_max_count = settings.api_count / 10
 
 
 def init_test_matrix():

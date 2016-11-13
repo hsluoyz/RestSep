@@ -181,8 +181,11 @@ def do_evolve_once():
 
     # random.shuffle(matrix_list)
     matrix_list[:population] = random.sample(matrix_list[:population], population)
+    # matrix_list[int((1 - crossover_ratio - mutate_ratio) * population):population] =\
+    #    random.sample(matrix_list[int((1 - crossover_ratio - mutate_ratio) * population):population], int((crossover_ratio + mutate_ratio) * population))
 
     do_mutate(0, int(mutate_ratio * population))
+    # do_mutate(int((1 - crossover_ratio - mutate_ratio) * population), int((1 - crossover_ratio) * population))
     do_crossover(int((1 - crossover_ratio) * population), population)
     # do_evaluate(0, population_limit)
 
