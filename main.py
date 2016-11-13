@@ -142,7 +142,7 @@ def do_init_generation():
     # print "\n*****************************************************"
     # print_result_from_matrix_list()
 
-    init_thread_pool()
+    # init_thread_pool()
 
 
 def do_mutate(start, end):
