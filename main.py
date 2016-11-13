@@ -69,6 +69,7 @@ def print_result_from_matrix_list():
     print "matrix list of %d instances result, generation = %d, average = %d, max = %d, min = %d" %\
           (len(valid_score_list), generation, sum(valid_score_list) / len(valid_score_list), max_score, min_score)
     print valid_score_list
+    # print ga.get_uncovered_testcases(matrix_list[0])
 
 
 def do_init():

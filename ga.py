@@ -67,6 +67,25 @@ def get_covered_testcase_number(m):
     return res
 
 
+def get_uncovered_testcases(m):
+    uncovered_testcases = []
+
+    row_size, col_size = m.shape
+    test_row_size, test_col_size = settings.test_matrix.shape
+
+    # 1st matrix multiply
+    res = np.dot(settings.test_matrix, (1 - m).transpose())
+    # print res
+
+    # 2nd matrix multiply
+    res = np.dot(np.where(res == 0, 1, 0), np.ones([row_size, 1]))
+
+    for i in range(test_row_size):
+        if res[i, 0] == 0:
+            uncovered_testcases.append(i)
+    return uncovered_testcases
+
+
 settings.full_score = 500
 
 
@@ -159,6 +178,13 @@ def mutate_matrix(m):
     #     i = random.randint(0, row_size - 1)
     #     m[i:] = 0
 
+    if random.random() < 0.2:
+        i = random.randint(0, row_size - 1)
+        uncovered_testcases = get_uncovered_testcases(m)
+        testcase_index = random.randint(0, len(uncovered_testcases) - 1)
+        m[i] += settings.test_matrix[uncovered_testcases[testcase_index]]
+        m[i] = np.where(m[i] != 0, 1, 0)
+
 
 def crossover_matrix(m1, m2):
     row_size, col_size = m1.shape
@@ -184,6 +210,10 @@ if __name__ == '__main__':
     # print n
     # print crossover_matrix(m, n)
 
+    # print m
+    # m = remove_empty_rows_from_matrix(m)
+    # print m
+
+    m[0] = n[0]
     print m
-    m = remove_empty_rows_from_matrix(m)
-    print m
+    print n
