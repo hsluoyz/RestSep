@@ -363,8 +363,11 @@ def end_gui():
     sys.exit(app.exec_())
 
 
+def do_show_test():
+    set_data(settings.test_matrix)
+
+
 def do_compute():
-    # set_data(settings.test_matrix)
     main.do_init_generation()
     main.do_evolve_generation(set_data, set_title)
 
@@ -375,7 +378,10 @@ if __name__ == "__main__":
     main.do_init()
     start_gui(sys.argv)
 
-    thread = threading.Thread(target=do_compute)
+    if sys.argv[-1] == "test":
+        thread = threading.Thread(target=do_show_test)
+    else:
+        thread = threading.Thread(target=do_compute)
     thread.setDaemon(True)
     thread.start()
     # do_compute()
