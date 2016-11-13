@@ -178,12 +178,20 @@ def mutate_matrix(m):
     #     i = random.randint(0, row_size - 1)
     #     m[i:] = 0
 
+    # Cover a uncovered testcase.
     if random.random() < 0.2:
         i = random.randint(0, row_size - 1)
         uncovered_testcases = get_uncovered_testcases(m)
         testcase_index = random.randint(0, len(uncovered_testcases) - 1)
         m[i] += settings.test_matrix[uncovered_testcases[testcase_index]]
         m[i] = np.where(m[i] != 0, 1, 0)
+
+    # Make sure we covered all APIs.
+    col_sums = m.sum(axis=0)
+    for j in range(len(col_sums)):
+        if col_sums[j] == 0:
+            i = random.randint(0, row_size - 1)
+            m[i, j] = 1
 
 
 def crossover_matrix(m1, m2):
