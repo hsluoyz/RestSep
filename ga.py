@@ -86,7 +86,7 @@ def get_uncovered_testcases(m):
     return uncovered_testcases
 
 
-settings.full_score = 500
+settings.full_score = 800
 
 
 def get_covered_api_score(number):
@@ -98,11 +98,11 @@ def get_category_number_score(number):
 
 
 def get_overuse_score(number, overall_number):
-    return max(100 - 100 * 2 * number / overall_number, 0)
+    return max(100 - 100 * number / overall_number, 0)
 
 
 def get_covered_testcase_score(number):
-    return 200 * number / settings.case_count
+    return 500 * number / settings.case_count
 
 
 def evaluate_matrix(m):
@@ -179,7 +179,7 @@ def mutate_matrix(m):
     #     m[i:] = 0
 
     # Cover a uncovered testcase.
-    if random.random() < 0.2:
+    if random.random() < 0.8:
         i = random.randint(0, row_size - 1)
         uncovered_testcases = get_uncovered_testcases(m)
         testcase_index = random.randint(0, len(uncovered_testcases) - 1)
