@@ -12,7 +12,7 @@ mutate_ratio = 0.2
 crossover_ratio = 0.4
 population = 100
 population_limit = int((1 + crossover_ratio / 2) * population)
-generation_count = 10000
+generation_count = 30000
 
 thread_pool = None
 
