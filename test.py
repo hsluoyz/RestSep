@@ -98,6 +98,8 @@ def init_from_test():
             path = regex_id.sub("%NAME%", path)
             path = regex_name.sub("\\1%NAME%", path)
 
+            path = path.strip("/")
+
             # print method + " | " + path
 
             if not settings.test_dict.has_key(current_line):
