@@ -6,6 +6,8 @@ import random
 import settings
 import test
 import ga
+import threading
+import cPickle as pickle
 
 mutate_ratio = 0.2
 crossover_ratio = 0.4
@@ -18,6 +20,7 @@ score_list = []
 top_score = 0
 top_title = ''
 
+temp_file_path = "temp.data"
 
 def print_list(name_list):
     for i in range(0, len(name_list)):
@@ -189,6 +192,71 @@ def do_evolve_generation(set_data_func, set_title_func):
             set_data_func(ga.remove_empty_rows_from_matrix(matrix_list[0]))
         set_title_func("input: %s, population: %d, current: %d/%d, %s" % (settings.filename, population, i + 1, generation_count, top_title))
 
+
+class Data(object):
+    def __init__(self, _generation, _matrix_list, _score_list, _top_score, _top_title):
+        self.generation = _generation
+        self.matrix_list = _matrix_list
+        self.score_list = _score_list
+        self.top_score = _top_score
+        self.top_title = _top_title
+
+
+class MyThread(threading.Thread):
+    def __init__(self, set_data_func, set_title_func):
+        super(MyThread, self).__init__()
+        self.stopped = False
+        self.set_data_func = set_data_func
+        self.set_title_func = set_title_func
+        self.cur_count = generation
+        # 判断是否从上次中断的结果继续运行，还是直接重新运行
+        with open(temp_file_path, "r") as temp_file:
+            content = temp_file.read().strip()
+            if content != "":
+                f = file(temp_file_path, 'rb')
+                data = pickle.load(f)
+                global generation, matrix_list, score_list, top_score, top_title
+                generation = data.generation
+                matrix_list = data.matrix_list
+                score_list = data.score_list
+                top_score = data.top_score
+                top_title = data.top_title
+                self.cur_count = generation
+
+    def stop(self):
+        self.stopped = True
+
+    def run(self):
+        do_init_generation()
+        global top_score, top_title
+        generation_count = 10000
+        is_stopped = False
+        for i in range(self.cur_count, generation_count):
+            print("%dth iteration" % i)
+            if self.stopped:
+                is_stopped = True
+                break
+            else:
+                do_evolve_once()
+                print_result_from_matrix_list()
+                if self.set_data_func and top_score < score_list[0]:
+                    top_score = score_list[0]
+                    top_title = "top generation: %d, top score: %d, %s" % (i + 1, top_score, ga.get_matrix_description(matrix_list[0]))
+                    self.set_data_func(ga.remove_empty_rows_from_matrix(matrix_list[0]))
+                self.set_title_func("input: %s, population: %d, current: %d/%d, %s" % (settings.filename, population, i + 1, generation_count, top_title))
+
+        if is_stopped:
+            print("sub thread is stopped!")
+            # 构造data对象
+            data = Data(generation, matrix_list, score_list, top_score, top_title)
+            # 序列化到temp.data
+            f = open(temp_file_path, 'wb')
+            pickle.dump(data, f)
+            f.close()
+            del data
+            print("serialize into file")
+        else:
+            print("done")
 
 if __name__ == '__main__':
     do_init()

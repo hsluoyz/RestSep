@@ -308,8 +308,25 @@ class MyMainWindow(QMainWindow):
         main_widget.setLayout(main_layout)
         self.setCentralWidget(main_widget)
 
-        # self.setLayout(main_layout)
+        # stop iteration
+        stop_action = QAction('stop', self)
+        stop_action.setShortcut('Ctrl+Q')
+        stop_action.setStatusTip('stop iteration')
+        stop_action.triggered.connect(self.on_stop)
 
+        # resume
+        resume_action = QAction('resume', self)
+        resume_action.setShortcut('Ctrl+R')
+        resume_action.setStatusTip('resume iteration')
+        resume_action.triggered.connect(self.on_resume)
+
+        # stop menu bar
+        menubar = self.menuBar()
+        menu_bar = menubar.addMenu('&Menu')
+        menu_bar.addAction(stop_action)
+        menu_bar.addAction(resume_action)
+
+        # self.setLayout(main_layout)
         # self.showMaximized()
         # self.show()
 
@@ -320,6 +337,20 @@ class MyMainWindow(QMainWindow):
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Escape:
             self.emit(SIGNAL('closeEmitApp()'))
+
+    @staticmethod
+    def on_stop():
+        print("stop clicked")
+        global thread
+        thread.stop()
+
+    @staticmethod
+    def on_resume():
+        print("resume clicked")
+        global thread
+        thread = main.MyThread(set_data, set_title)
+        thread.setDaemon(True)
+        thread.start()
 
 
 def set_title(title):
@@ -357,7 +388,6 @@ def start_gui(args):
 
 def end_gui():
     global app
-
     sys.exit(app.exec_())
 
 
@@ -366,6 +396,7 @@ def do_compute():
     main.do_init_generation()
     main.do_evolve_generation(set_data, set_title)
 
+
 if __name__ == "__main__":
     # for style in QStyleFactory.keys():
     #     print style
@@ -373,11 +404,13 @@ if __name__ == "__main__":
     main.do_init()
     start_gui(sys.argv)
 
-    thread = threading.Thread(target=do_compute)
+    # thread = threading.Thread(target=do_compute)
+    # thread.setDaemon(True)
+    # thread.start()
+    thread = main.MyThread(set_data, set_title)
     thread.setDaemon(True)
     thread.start()
     # do_compute()
-
     end_gui()
 
     # print get_path_head('os-agents/%NAME% | POST')
