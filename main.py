@@ -2,6 +2,7 @@
 
 from pprint import pprint
 import random
+import multiprocessing
 
 import settings
 import test
@@ -11,16 +12,21 @@ import cPickle as pickle
 
 mutate_ratio = 0.2
 crossover_ratio = 0.4
-population = 100
+population = 160
 population_limit = int((1 + crossover_ratio / 2) * population)
+generation_count = 30000
+
+thread_pool = None
 
 generation = 0
 matrix_list = []
 score_list = []
 top_score = 0
 top_title = ''
+max_score = 0
+min_score = 0
 
-temp_file_path = "temp.data"
+temp_data_path = "temp.data"
 
 def print_list(name_list):
     for i in range(0, len(name_list)):
@@ -57,10 +63,16 @@ def sort_matrix_list():
 
 
 def print_result_from_matrix_list():
+    global max_score, min_score
+
     valid_score_list = score_list[:population]
+    max_score = max(valid_score_list)
+    min_score = min(valid_score_list)
+
     print "matrix list of %d instances result, generation = %d, average = %d, max = %d, min = %d" %\
-          (len(valid_score_list), generation, sum(valid_score_list) / len(valid_score_list), max(valid_score_list), min(valid_score_list))
-    print valid_score_list
+          (len(valid_score_list), generation, sum(valid_score_list) / len(valid_score_list), max_score, min_score)
+    # print valid_score_list
+    print ga.get_uncovered_testcases(matrix_list[0])
 
 
 def do_init():
@@ -77,7 +89,7 @@ def do_init():
     print "\n*****************************************************"
     print "cleansed test matrix:"
     # Remove the duplicated rows in the test matrix.
-    # settings.test_matrix, settings.case_list = test.cleanse_test_matrix(settings.test_matrix, settings.case_list)
+    settings.test_matrix, settings.case_list = test.cleanse_test_matrix(settings.test_matrix, settings.case_list)
     # Remove the shadow-covered rows in the test matrix.
     # settings.test_matrix, settings.case_list = test.cleanse_test_matrix2(settings.test_matrix, settings.case_list)
     settings.case_count = len(settings.case_list)
@@ -133,6 +145,8 @@ def do_init_generation():
     # print "\n*****************************************************"
     # print_result_from_matrix_list()
 
+    # init_thread_pool()
+
 
 def do_mutate(start, end):
     for i in range(start, end):
@@ -171,8 +185,11 @@ def do_evolve_once():
 
     # random.shuffle(matrix_list)
     matrix_list[:population] = random.sample(matrix_list[:population], population)
+    # matrix_list[int((1 - crossover_ratio - mutate_ratio) * population):population] =\
+    #    random.sample(matrix_list[int((1 - crossover_ratio - mutate_ratio) * population):population], int((crossover_ratio + mutate_ratio) * population))
 
     do_mutate(0, int(mutate_ratio * population))
+    # do_mutate(int((1 - crossover_ratio - mutate_ratio) * population), int((1 - crossover_ratio) * population))
     do_crossover(int((1 - crossover_ratio) * population), population)
     # do_evaluate(0, population_limit)
 
@@ -180,17 +197,43 @@ def do_evolve_once():
     # do_eliminate()
 
 
+def init_thread_pool():
+    global thread_pool
+    thread_pool = multiprocessing.Pool(processes=10)
+
+
+def do_evolve_once_multi_thread():
+    global generation
+    generation += 1
+
+    matrix_list[:population] = random.sample(matrix_list[:population], population)
+
+    thread_pool.apply_async(do_mutate, (0, int(mutate_ratio * population)))
+    thread_pool.apply_async(do_crossover, (int((1 - crossover_ratio) * population), population))
+
+    # thread_pool.close()
+    # thread_pool.join()
+
+    # do_mutate(0, int(mutate_ratio * population))
+    # do_crossover(int((1 - crossover_ratio) * population), population)
+
+    sort_matrix_list()
+
+
 def do_evolve_generation(set_data_func, set_title_func):
     global top_score, top_title
-    generation_count = 10000
+
     for i in range(generation_count):
         do_evolve_once()
+        # do_evolve_once_multi_thread()
         print_result_from_matrix_list()
-        if set_data_func and top_score < score_list[0]:
-            top_score = score_list[0]
-            top_title = "top generation: %d, top score: %d, %s" % (i + 1, top_score, ga.get_matrix_description(matrix_list[0]))
-            set_data_func(ga.remove_empty_rows_from_matrix(matrix_list[0]))
-        set_title_func("input: %s, population: %d, current: %d/%d, %s" % (settings.filename, population, i + 1, generation_count, top_title))
+        if set_data_func:
+            if top_score < score_list[0]:
+                top_score = score_list[0]
+                reduced_top_matrix = ga.get_reduced_matrix(matrix_list[0])
+                top_title = "top generation: %d, top score: %d/%d, %s" % (i + 1, top_score, settings.full_score, ga.get_matrix_description(reduced_top_matrix))
+                set_data_func(ga.remove_empty_rows_from_matrix(2 * matrix_list[0] - reduced_top_matrix))
+            set_title_func("input: %s, population: %d, min/max: (%d, %d), current: %d/%d, %s" % (settings.filename, population, min_score, max_score, i + 1, generation_count, top_title))
 
 
 class Data(object):
@@ -203,17 +246,18 @@ class Data(object):
 
 
 class MyThread(threading.Thread):
-    def __init__(self, set_data_func, set_title_func):
+    def __init__(self, set_data_func, set_title_func, _save_file_path=temp_data_path):
         super(MyThread, self).__init__()
         self.stopped = False
         self.set_data_func = set_data_func
         self.set_title_func = set_title_func
         self.cur_count = generation
+        self.save_file_path = _save_file_path
         # 判断是否从上次中断的结果继续运行，还是直接重新运行
-        with open(temp_file_path, "r") as temp_file:
+        with open(self.save_file_path, "r") as temp_file:
             content = temp_file.read().strip()
             if content != "":
-                f = file(temp_file_path, 'rb')
+                f = file(self.save_file_path, 'rb')
                 data = pickle.load(f)
                 global generation, matrix_list, score_list, top_score, top_title
                 generation = data.generation
@@ -223,13 +267,13 @@ class MyThread(threading.Thread):
                 top_title = data.top_title
                 self.cur_count = generation
 
-    def stop(self):
+    def stop(self, _save_file_path):
         self.stopped = True
+        self.save_file_path = _save_file_path
 
     def run(self):
         do_init_generation()
         global top_score, top_title
-        generation_count = 10000
         is_stopped = False
         for i in range(self.cur_count, generation_count):
             print("%dth iteration" % i)
@@ -250,7 +294,7 @@ class MyThread(threading.Thread):
             # 构造data对象
             data = Data(generation, matrix_list, score_list, top_score, top_title)
             # 序列化到temp.data
-            f = open(temp_file_path, 'wb')
+            f = open(self.save_file_path, 'wb')
             pickle.dump(data, f)
             f.close()
             del data
@@ -263,4 +307,4 @@ if __name__ == '__main__':
     do_demo()
 
     do_init_generation()
-    do_evolve_generation()
+    do_evolve_generation(None, None)

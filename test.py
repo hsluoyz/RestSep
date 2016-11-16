@@ -54,11 +54,9 @@ def init_from_test():
     # |os-extra_specs/|os-hosts/|os-hypervisors/)[^/]+"
     regex_name = re.compile(pattern_name)
 
-    filepath = "D:/openstack/"
-
     current_line = ""
 
-    for line in open(filepath + settings.filename):
+    for line in open(settings.filepath + settings.filename):
         # print "AAA" + line + "BBB"
         if line.startswith("#"):
             line = line.strip("\n").strip("#").lstrip('test_')
@@ -100,6 +98,8 @@ def init_from_test():
             path = regex_id.sub("%NAME%", path)
             path = regex_name.sub("\\1%NAME%", path)
 
+            path = path.strip("/")
+
             # print method + " | " + path
 
             if not settings.test_dict.has_key(current_line):
@@ -121,7 +121,7 @@ def init_lists():
     settings.api_list = list(set(settings.api_list))
     settings.api_list.sort()
     settings.api_count = len(settings.api_list)
-    settings.category_max_count = settings.api_count / 4
+    settings.category_max_count = settings.api_count / 10
 
 
 def init_test_matrix():

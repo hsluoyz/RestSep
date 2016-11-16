@@ -191,9 +191,9 @@ class LPTable(QTableWidget):
             vlist.append(str(i) + ":" + settings.case_list[i])
         self.setVerticalHeaderLabels(vlist)
 
-        # for i in range(settings.case_count):
-        #     header_item = self.verticalHeaderItem(i)
-        #     header_item.setToolTip(settings.case_list[i])
+        for i in range(settings.case_count):
+            header_item = self.verticalHeaderItem(i)
+            header_item.setToolTip(settings.case_list[i])
 
         vheader = self.verticalHeader()
         vheader.setFixedWidth(350)
@@ -207,6 +207,8 @@ class LPTable(QTableWidget):
                 new_item = QTableWidgetItem(str(value))
                 if value == 1:
                     new_item.setBackground(QColor(255, 50, 50))
+                elif value == 2:
+                    new_item.setBackground(QColor(255, 220, 220))
                 # new_item.setToolTip("aaa")
                 self.setItem(i, j, new_item)
 
@@ -338,17 +340,18 @@ class MyMainWindow(QMainWindow):
         if event.key() == Qt.Key_Escape:
             self.emit(SIGNAL('closeEmitApp()'))
 
-    @staticmethod
-    def on_stop():
+    def on_stop(self):
         print("stop clicked")
+        save_file_path = QFileDialog.getOpenFileName(self, 'Open file', '.', "data files (*.data)")
+        print(save_file_path)
         global thread
-        thread.stop()
+        thread.stop(save_file_path)
 
-    @staticmethod
-    def on_resume():
+    def on_resume(self):
         print("resume clicked")
+        save_file_path = QFileDialog.getOpenFileName(self, 'Open file', '.', "data files (*.data)")
         global thread
-        thread = main.MyThread(set_data, set_title)
+        thread = main.MyThread(set_data, set_title, save_file_path)
         thread.setDaemon(True)
         thread.start()
 
@@ -391,8 +394,11 @@ def end_gui():
     sys.exit(app.exec_())
 
 
+def do_show_test():
+    set_data(settings.test_matrix)
+
+
 def do_compute():
-    # set_data(settings.test_matrix)
     main.do_init_generation()
     main.do_evolve_generation(set_data, set_title)
 
@@ -404,10 +410,11 @@ if __name__ == "__main__":
     main.do_init()
     start_gui(sys.argv)
 
-    # thread = threading.Thread(target=do_compute)
-    # thread.setDaemon(True)
-    # thread.start()
-    thread = main.MyThread(set_data, set_title)
+    if sys.argv[-1] == "test":
+        thread = threading.Thread(target=do_show_test)
+    else:
+        # thread = threading.Thread(target=do_compute)
+        thread = main.MyThread(set_data, set_title)
     thread.setDaemon(True)
     thread.start()
     # do_compute()

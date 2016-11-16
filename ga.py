@@ -67,6 +67,63 @@ def get_covered_testcase_number(m):
     return res
 
 
+def get_covered_testcase_number_special(m):
+    row_size, col_size = m.shape
+    test_row_size, test_col_size = settings.test_matrix.shape
+
+    # 1st matrix multiply
+    res = np.dot(settings.test_matrix, np.where(m == 0, 1, 0).transpose())
+    # print res
+
+    # 2nd matrix multiply
+    res = np.dot(np.where(res == 0, 1, 0), np.ones([row_size, 1]))
+
+    # 3rd matrix multiply
+    res = np.dot(np.ones([1, test_row_size]), np.where(res != 0, 1, 0))
+
+    # Get the score.
+    res = int(res[0, 0])
+
+    return res
+
+
+def get_reduced_matrix(m):
+    row_size, col_size = m.shape
+    original_covered = get_covered_testcase_number_special(m)
+    new_m = np.copy(m)
+
+    for i in range(row_size):
+        for j in range(col_size):
+            if new_m[i, j] == 1:
+                new_m[i, j] = 0
+                if get_covered_testcase_number_special(new_m) != original_covered:
+                    new_m[i, j] = 1
+
+    return new_m
+
+
+def get_uncovered_testcases(m):
+    uncovered_testcases = []
+
+    row_size, col_size = m.shape
+    test_row_size, test_col_size = settings.test_matrix.shape
+
+    # 1st matrix multiply
+    res = np.dot(settings.test_matrix, (1 - m).transpose())
+    # print res
+
+    # 2nd matrix multiply
+    res = np.dot(np.where(res == 0, 1, 0), np.ones([row_size, 1]))
+
+    for i in range(test_row_size):
+        if res[i, 0] == 0:
+            uncovered_testcases.append(i)
+    return uncovered_testcases
+
+
+settings.full_score = 800
+
+
 def get_covered_api_score(number):
     return 100 * number / settings.api_count
 
@@ -76,11 +133,11 @@ def get_category_number_score(number):
 
 
 def get_overuse_score(number, overall_number):
-    return max(100 - 100 * 2 * number / overall_number, 0)
+    return max(100 - 100 * number / overall_number, 0)
 
 
 def get_covered_testcase_score(number):
-    return 200 * number / settings.case_count
+    return 500 * number / settings.case_count
 
 
 def evaluate_matrix(m):
@@ -124,7 +181,7 @@ def print_matrix(m):
     print "category number = " + str(category_number) + " (expected: 10, score: " + str(get_category_number_score(category_number)) + ")"
     print "overuse number = " + str(overuse_number) + " (expected: 0, score: " + str(get_overuse_score(overuse_number, (row_size - 1) * col_size)) + ")"
     print "covered testcase number = " + str(covered_testcase_number) + " (expected: " + str(settings.case_count) + ", score: " + str(get_covered_testcase_score(covered_testcase_number)) + ")"
-    print "final score = " + str(evaluate_matrix_from_numbers(m, covered_api_number, category_number, overuse_number, covered_testcase_number)) + "/500"
+    print "final score = " + str(evaluate_matrix_from_numbers(m, covered_api_number, category_number, overuse_number, covered_testcase_number)) + "/" + str(settings.full_score)
 
 
 def get_matrix_description(m):
@@ -140,7 +197,7 @@ def get_matrix_description(m):
 def mutate_matrix(m):
     row_size, col_size = m.shape
 
-    for k in range(0, 100):
+    for k in range(0, int(row_size * col_size * 0.1)):
         i = random.randint(0, row_size - 1)
         j = random.randint(0, col_size - 1)
         if m[i, j] == 0:
@@ -148,6 +205,28 @@ def mutate_matrix(m):
                 m[i, j] = 1
         else:
             m[i, j] = 0
+            # if random.random() < 0.2:
+            #     m[i, j] = 0
+
+    # Clear a random row.
+    # if random.random() < 0.5:
+    #     i = random.randint(0, row_size - 1)
+    #     m[i:] = 0
+
+    # Cover a uncovered testcase.
+    if random.random() < 0.8:
+        i = random.randint(0, row_size - 1)
+        uncovered_testcases = get_uncovered_testcases(m)
+        testcase_index = random.randint(0, len(uncovered_testcases) - 1)
+        m[i] += settings.test_matrix[uncovered_testcases[testcase_index]]
+        m[i] = np.where(m[i] != 0, 1, 0)
+
+    # Make sure we covered all APIs.
+    col_sums = m.sum(axis=0)
+    for j in range(len(col_sums)):
+        if col_sums[j] == 0:
+            i = random.randint(0, row_size - 1)
+            m[i, j] = 1
 
 
 def crossover_matrix(m1, m2):
@@ -174,6 +253,10 @@ if __name__ == '__main__':
     # print n
     # print crossover_matrix(m, n)
 
+    # print m
+    # m = remove_empty_rows_from_matrix(m)
+    # print m
+
+    m[0] = n[0]
     print m
-    m = remove_empty_rows_from_matrix(m)
-    print m
+    print n
