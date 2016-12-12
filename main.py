@@ -250,8 +250,8 @@ class MyThread(threading.Thread):
     def __init__(self, set_data_func, set_title_func, _save_file_path=temp_data_path):
         super(MyThread, self).__init__()
         self.stopped = False
-        self.serialized = False
-        self.resumed = False
+        # self.serialized = False
+        self.opened = False
         self.set_data_func = set_data_func
         self.set_title_func = set_title_func
         self.cur_count = generation
@@ -259,45 +259,39 @@ class MyThread(threading.Thread):
 
     def stop(self):
         self.stopped = True
-
-    def serialize(self, _save_file_path):
-        self.serialized = True
-        self.save_file_path = _save_file_path
-
-    def resume(self):
-        self.resumed = True
+    #
+    # def serialize(self, _save_file_path):
+    #     self.serialized = True
+    #     self.save_file_path = _save_file_path
 
     def run(self):
-        while True:
-            # 判断是否从上次中断的结果继续运行，还是直接重新运行
-            if self.resumed:
-                with open(self.save_file_path, "r") as resume_file:
-                    content = resume_file.read().strip()
-                    if content != "":
-                        f = file(self.save_file_path, 'rb')
-                        data = pickle.load(f)
-                        global generation, matrix_list, score_list, top_score, top_title
-                        generation = data.generation
-                        matrix_list = data.matrix_list
-                        score_list = data.score_list
-                        top_score = data.top_score
-                        top_title = data.top_title
-                        self.cur_count = generation
-                        break
-                    else:
-                        print("blank file, start from zero...")
-                        break
-            else:
-                time.sleep(1)
+
+        # 判断是否从上次中断的结果继续运行，还是直接重新运行
+        if self.opened:
+            with open(self.save_file_path, "r") as resume_file:
+                content = resume_file.read().strip()
+                if content != "":
+                    f = file(self.save_file_path, 'rb')
+                    data = pickle.load(f)
+                    global generation, matrix_list, score_list, top_score, top_title
+                    generation = data.generation
+                    matrix_list = data.matrix_list
+                    score_list = data.score_list
+                    top_score = data.top_score
+                    top_title = data.top_title
+                    self.cur_count = generation
+                else:
+                    # 文件为空，从0开始运行
+                    print("blank file, start from zero...")
 
         # 正式开始运行
         do_init_generation()
-        global top_score, top_title
-        is_stopped = False
+        # global top_score, top_title
+        # is_stopped = False
         for i in range(self.cur_count, generation_count):
             print("%dth iteration" % i)
             if self.stopped:
-                is_stopped = True
+                # is_stopped = True
                 break
             else:
                 do_evolve_once()
@@ -308,22 +302,22 @@ class MyThread(threading.Thread):
                     self.set_data_func(ga.remove_empty_rows_from_matrix(matrix_list[0]))
                 self.set_title_func("input: %s, population: %d, current: %d/%d, %s" % (settings.filename, population, i + 1, generation_count, top_title))
 
-        if is_stopped:
-            print("sub thread is stopped!")
-            while True:
-                if self.serialized:
-                    # 构造data对象
-                    data = Data(generation, matrix_list, score_list, top_score, top_title)
-                    # 序列化到temp.data
-                    f = open(self.save_file_path, 'wb')
-                    pickle.dump(data, f)
-                    f.close()
-                    del data
-                    print("serialize into file")
-                    break
-                else:
-                    time.sleep(1)
-                    print("wait user to save the data")
+        # if is_stopped:
+        #     print("sub thread is stopped!")
+        #     while True:
+        #         if self.serialized:
+        #             # 构造data对象
+        #             data = Data(generation, matrix_list, score_list, top_score, top_title)
+        #             # 序列化到temp.data
+        #             f = open(self.save_file_path, 'wb')
+        #             pickle.dump(data, f)
+        #             f.close()
+        #             del data
+        #             print("serialize into file")
+        #             break
+        #         else:
+        #             time.sleep(1)
+        #             print("wait user to save the data")
 
         print("done")
 

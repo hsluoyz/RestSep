@@ -7,6 +7,7 @@ from PyQt4.QtGui import *
 
 import settings
 import main
+import cPickle as pickle
 
 app = None
 main_window = None
@@ -364,25 +365,38 @@ class MyMainWindow(QMainWindow):
 
     def on_resume(self):
         print("resume clicked")
-        # save_file_path = QFileDialog.getOpenFileName(self, 'Open file', '.', "data files (*.data)")
         global thread
-        thread.resume()
+        if thread.isAlive():
+            thread.stop()
+        thread = main.MyThread(set_data, set_title)
+        thread.setDaemon(True)
+        thread.start()
         self.statusBar().showMessage(u'继续运行')
 
     def on_open(self):
-        open_file_path = QFileDialog.getOpenFileName(self, 'Open file', '.', "data files (*.data)")
+        open_file_path = QFileDialog.getOpenFileName(self, 'Open file', '.', "files (*.*)")
         print(open_file_path)
         global thread
+        thread.stop()
         thread = main.MyThread(set_data, set_title, open_file_path)
         thread.setDaemon(True)
+        thread.opened = True
         thread.start()
         self.statusBar().showMessage(u'打开文件: ' + open_file_path)
 
     def on_save_as(self):
-        save_file_path = QFileDialog.getOpenFileName(self, 'Open file', '.', "data files (*.data)")
+        save_file_path = QFileDialog.getSaveFileName(self, 'Open file', '.', "files (*.*)")
         print(save_file_path)
-        global thread
-        thread.serialize(_save_file_path=save_file_path)
+        # global thread
+        # thread.serialize(_save_file_path=save_file_path)
+        # 构造data对象
+        data = main.Data(main.generation, main.matrix_list, main.score_list, main.top_score, main.top_title)
+        # 序列化到temp.data
+        f = open(self.save_file_path, 'wb')
+        pickle.dump(data, f)
+        f.close()
+        del data
+        print("serialize into file")
         self.statusBar().showMessage(u'保存到文件: ' + save_file_path)
 
 
