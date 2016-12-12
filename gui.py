@@ -392,7 +392,7 @@ class MyMainWindow(QMainWindow):
         # 构造data对象
         data = main.Data(main.generation, main.matrix_list, main.score_list, main.top_score, main.top_title)
         # 序列化到temp.data
-        f = open(self.save_file_path, 'wb')
+        f = open(save_file_path, 'wb')
         pickle.dump(data, f)
         f.close()
         del data
