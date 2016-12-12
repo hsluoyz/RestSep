@@ -1,4 +1,4 @@
-# coding=gbk
+# coding: UTF-8
 
 import sys
 import threading
@@ -311,22 +311,38 @@ class MyMainWindow(QMainWindow):
         self.setCentralWidget(main_widget)
 
         # stop iteration
-        stop_action = QAction('stop', self)
+        stop_action = QAction('Stop', self)
         stop_action.setShortcut('Ctrl+Q')
         stop_action.setStatusTip('stop iteration')
         stop_action.triggered.connect(self.on_stop)
 
         # resume
-        resume_action = QAction('resume', self)
+        resume_action = QAction('Resume', self)
         resume_action.setShortcut('Ctrl+R')
-        resume_action.setStatusTip('resume iteration')
+        resume_action.setStatusTip('resume from a data file')
         resume_action.triggered.connect(self.on_resume)
+
+        # open
+        open_action = QAction('Open', self)
+        open_action.setShortcut('Ctrl+O')
+        open_action.setStatusTip('open a data file')
+        open_action.triggered.connect(self.on_open)
+
+        # save as
+        save_as_action = QAction('Save As', self)
+        save_as_action.setShortcut('Ctrl+S')
+        save_as_action.setStatusTip('save as a data file')
+        save_as_action.triggered.connect(self.on_save_as)
 
         # stop menu bar
         menubar = self.menuBar()
         menu_bar = menubar.addMenu('&Menu')
         menu_bar.addAction(stop_action)
         menu_bar.addAction(resume_action)
+        menu_bar.addAction(open_action)
+        menu_bar.addAction(save_as_action)
+
+        self.statusBar().showMessage(u"请先打开一个文件")
 
         # self.setLayout(main_layout)
         # self.showMaximized()
@@ -342,18 +358,32 @@ class MyMainWindow(QMainWindow):
 
     def on_stop(self):
         print("stop clicked")
-        save_file_path = QFileDialog.getOpenFileName(self, 'Open file', '.', "data files (*.data)")
-        print(save_file_path)
         global thread
-        thread.stop(save_file_path)
+        thread.stop()
+        self.statusBar().showMessage(u"暂停")
 
     def on_resume(self):
         print("resume clicked")
-        save_file_path = QFileDialog.getOpenFileName(self, 'Open file', '.', "data files (*.data)")
+        # save_file_path = QFileDialog.getOpenFileName(self, 'Open file', '.', "data files (*.data)")
         global thread
-        thread = main.MyThread(set_data, set_title, save_file_path)
+        thread.resume()
+        self.statusBar().showMessage(u'继续运行')
+
+    def on_open(self):
+        open_file_path = QFileDialog.getOpenFileName(self, 'Open file', '.', "data files (*.data)")
+        print(open_file_path)
+        global thread
+        thread = main.MyThread(set_data, set_title, open_file_path)
         thread.setDaemon(True)
         thread.start()
+        self.statusBar().showMessage(u'打开文件: ' + open_file_path)
+
+    def on_save_as(self):
+        save_file_path = QFileDialog.getOpenFileName(self, 'Open file', '.', "data files (*.data)")
+        print(save_file_path)
+        global thread
+        thread.serialize(_save_file_path=save_file_path)
+        self.statusBar().showMessage(u'保存到文件: ' + save_file_path)
 
 
 def set_title(title):
