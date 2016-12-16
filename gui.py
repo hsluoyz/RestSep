@@ -12,6 +12,7 @@ import cPickle as pickle
 app = None
 main_window = None
 
+is_running = False
 
 def get_path_head(api_name):
     api_item_list = api_name.split('|')[0].split('/')
@@ -357,21 +358,29 @@ class MyMainWindow(QMainWindow):
         if event.key() == Qt.Key_Escape:
             self.emit(SIGNAL('closeEmitApp()'))
 
-    def on_stop(self):
-        print("stop clicked")
+    def on_stop_or_resume(self):
         global thread
-        thread.stop()
-        self.statusBar().showMessage(u"暂停")
+        global is_running
+        if is_running:
+            is_running = False
+            print("stop clicked")
+            thread.stop()
+            self.statusBar().showMessage(u"暂停")
+        else:
+            is_running = True
+            print("resume clicked")
+            if thread.isAlive():
+                thread.stop()
+            thread = main.MyThread(set_data, set_title)
+            thread.setDaemon(True)
+            thread.start()
+            self.statusBar().showMessage(u'继续运行')
+
+    def on_stop(self):
+        self.on_stop_or_resume()
 
     def on_resume(self):
-        print("resume clicked")
-        global thread
-        if thread.isAlive():
-            thread.stop()
-        thread = main.MyThread(set_data, set_title)
-        thread.setDaemon(True)
-        thread.start()
-        self.statusBar().showMessage(u'继续运行')
+        self.on_stop_or_resume()
 
     def on_open(self):
         open_file_path = QFileDialog.getOpenFileName(self, 'Open file', '.', "files (*.*)")
@@ -454,6 +463,7 @@ if __name__ == "__main__":
     main.do_init()
     start_gui(sys.argv)
 
+    is_running = True
     if sys.argv[-1] == "test":
         thread = threading.Thread(target=do_show_test)
     else:
