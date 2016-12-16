@@ -238,12 +238,30 @@ def do_evolve_generation(set_data_func, set_title_func):
 
 
 class Data(object):
-    def __init__(self, _generation, _matrix_list, _score_list, _top_score, _top_title):
+    def __init__(self, _generation, _matrix_list, _score_list, _top_score, _top_title, _max_score, _min_score):
         self.generation = _generation
         self.matrix_list = _matrix_list
         self.score_list = _score_list
         self.top_score = _top_score
         self.top_title = _top_title
+        self.max_score = _max_score
+        self.min_score = _min_score
+
+
+def save_session():
+    data = Data(generation, matrix_list, score_list, top_score, top_title, max_score, min_score)
+    return data
+
+
+def load_session(data):
+    global generation, matrix_list, score_list, top_score, top_title, max_score, min_score
+    generation = data.generation
+    matrix_list = data.matrix_list
+    score_list = data.score_list
+    top_score = data.top_score
+    top_title = data.top_title
+    max_score = data.max_score
+    min_score = data.min_score
 
 
 class MyThread(threading.Thread):
@@ -251,10 +269,8 @@ class MyThread(threading.Thread):
         super(MyThread, self).__init__()
         self.stopped = False
         # self.serialized = False
-        self.opened = False
         self.set_data_func = set_data_func
         self.set_title_func = set_title_func
-        self.cur_count = generation
         self.save_file_path = _save_file_path
 
     def stop(self):
@@ -265,30 +281,12 @@ class MyThread(threading.Thread):
     #     self.save_file_path = _save_file_path
 
     def run(self):
-
-        # 判断是否从上次中断的结果继续运行，还是直接重新运行
-        if self.opened:
-            with open(self.save_file_path, "r") as resume_file:
-                content = resume_file.read().strip()
-                if content != "":
-                    f = file(self.save_file_path, 'rb')
-                    data = pickle.load(f)
-                    global generation, matrix_list, score_list, top_score, top_title
-                    generation = data.generation
-                    matrix_list = data.matrix_list
-                    score_list = data.score_list
-                    top_score = data.top_score
-                    top_title = data.top_title
-                    self.cur_count = generation
-                else:
-                    # 文件为空，从0开始运行
-                    print("blank file, start from zero...")
-
+        global generation, matrix_list, score_list, top_score, top_title, max_score, min_score
         # 正式开始运行
         do_init_generation()
         # global top_score, top_title
         # is_stopped = False
-        for i in range(self.cur_count, generation_count):
+        for i in range(generation, generation_count):
             print("%dth iteration" % i)
             if self.stopped:
                 # is_stopped = True
@@ -302,24 +300,8 @@ class MyThread(threading.Thread):
                     self.set_data_func(ga.remove_empty_rows_from_matrix(matrix_list[0]))
                 self.set_title_func("input: %s, population: %d, current: %d/%d, %s" % (settings.filename, population, i + 1, generation_count, top_title))
 
-        # if is_stopped:
-        #     print("sub thread is stopped!")
-        #     while True:
-        #         if self.serialized:
-        #             # 构造data对象
-        #             data = Data(generation, matrix_list, score_list, top_score, top_title)
-        #             # 序列化到temp.data
-        #             f = open(self.save_file_path, 'wb')
-        #             pickle.dump(data, f)
-        #             f.close()
-        #             del data
-        #             print("serialize into file")
-        #             break
-        #         else:
-        #             time.sleep(1)
-        #             print("wait user to save the data")
-
         print("done")
+
 
 if __name__ == '__main__':
     do_init()

@@ -376,23 +376,34 @@ class MyMainWindow(QMainWindow):
         self.on_stop_or_resume()
 
     def on_open(self):
-        open_file_path = QFileDialog.getOpenFileName(self, 'Open file', '.', "files (*.*)")
+        open_file_path = QFileDialog.getOpenFileName(self, 'Open file', '.', "files (*.sav)")
         print(open_file_path)
+
+        # 判断是否从上次中断的结果继续运行，还是直接重新运行
+        with open(self.open_file_path, "r") as resume_file:
+            content = resume_file.read().strip()
+            if content != "":
+                f = file(self.save_file_path, 'rb')
+                data = pickle.load(f)
+                main.load_session(data)
+            else:
+                # 文件为空，从0开始运行
+                print("blank file, start from zero...")
+
         global thread
         thread.stop()
         thread = main.MyThread(set_data, set_title, open_file_path)
         thread.setDaemon(True)
-        thread.opened = True
         thread.start()
         self.statusBar().showMessage(u'打开文件: ' + open_file_path)
 
     def on_save_as(self):
-        save_file_path = QFileDialog.getSaveFileName(self, 'Open file', '.', "files (*.*)")
+        save_file_path = QFileDialog.getSaveFileName(self, 'Open file', '.', "files (*.sav)")
         print(save_file_path)
         # global thread
         # thread.serialize(_save_file_path=save_file_path)
         # 构造data对象
-        data = main.Data(main.generation, main.matrix_list, main.score_list, main.top_score, main.top_title)
+        data = main.save_session()
         # 序列化到temp.data
         f = open(save_file_path, 'wb')
         pickle.dump(data, f)
