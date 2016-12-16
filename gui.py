@@ -312,17 +312,11 @@ class MyMainWindow(QMainWindow):
         main_widget.setLayout(main_layout)
         self.setCentralWidget(main_widget)
 
-        # stop iteration
-        stop_action = QAction('Stop', self)
-        stop_action.setShortcut('Ctrl+Q')
-        stop_action.setStatusTip('stop iteration')
-        stop_action.triggered.connect(self.on_stop)
-
-        # resume
-        resume_action = QAction('Resume', self)
-        resume_action.setShortcut('Ctrl+R')
-        resume_action.setStatusTip('resume from a data file')
-        resume_action.triggered.connect(self.on_resume)
+        # stop or resume
+        stop_action = QAction('Stop | Resume', self)
+        stop_action.setShortcut('Ctrl+Z')
+        stop_action.setStatusTip('stop or resume the iteration')
+        stop_action.triggered.connect(self.on_stop_or_resume)
 
         # open
         open_action = QAction('Open', self)
@@ -340,7 +334,6 @@ class MyMainWindow(QMainWindow):
         menubar = self.menuBar()
         menu_bar = menubar.addMenu('&Menu')
         menu_bar.addAction(stop_action)
-        menu_bar.addAction(resume_action)
         menu_bar.addAction(open_action)
         menu_bar.addAction(save_as_action)
 
