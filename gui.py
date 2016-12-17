@@ -320,7 +320,7 @@ class MyMainWindow(QMainWindow):
 
         # open
         open_action = QAction('Open', self)
-        open_action.setShortcut('Ctrl+O')
+        open_action.setShortcut('Ctrl+X')
         open_action.setStatusTip('open a data file')
         open_action.triggered.connect(self.on_open)
 
@@ -377,24 +377,25 @@ class MyMainWindow(QMainWindow):
 
     def on_open(self):
         open_file_path = QFileDialog.getOpenFileName(self, 'Open file', '.', "files (*.sav)")
-        print(open_file_path)
+        open_file_path = unicode(open_file_path).encode('utf-8')
+        if open_file_path == '':
+            return
 
-        # 判断是否从上次中断的结果继续运行，还是直接重新运行
-        with open(self.open_file_path, "r") as resume_file:
+        with open(open_file_path, "r") as resume_file:
             content = resume_file.read().strip()
             if content != "":
-                f = file(self.save_file_path, 'rb')
+                f = file(open_file_path, 'rb')
                 data = pickle.load(f)
                 main.load_session(data)
             else:
-                # 文件为空，从0开始运行
-                print("blank file, start from zero...")
+                return
 
-        global thread
-        thread.stop()
-        thread = main.MyThread(set_data, set_title, open_file_path)
-        thread.setDaemon(True)
-        thread.start()
+        main.show_session(set_data, set_title)
+        # global thread
+        # thread.stop()
+        # thread = main.MyThread(set_data, set_title, open_file_path)
+        # thread.setDaemon(True)
+        # thread.start()
         self.statusBar().showMessage(u'打开文件: ' + open_file_path)
 
     def on_save_as(self):
@@ -474,6 +475,7 @@ if __name__ == "__main__":
         # thread = threading.Thread(target=do_compute)
         thread = main.MyThread(set_data, set_title)
     thread.setDaemon(True)
+    thread.init_random_data()
     thread.start()
     # do_compute()
     end_gui()
