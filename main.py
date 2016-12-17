@@ -16,6 +16,7 @@ population = 160
 generation = 0
 matrix_list = []
 top_score = 0
+top_matrix = None
 top_title = ''
 
 score_list = []
@@ -217,61 +218,65 @@ def do_evolve_once_multi_thread():
     sort_matrix_list()
 
 
-def do_evolve_generation(set_data_func, set_title_func):
-    global input_file, population, generation, matrix_list, top_generation, top_score, top_title
-    global score_list
-
-    while True:
-        do_evolve_once()
-        # do_evolve_once_multi_thread()
-        print_result_from_matrix_list()
-        if set_data_func:
-            if top_score < score_list[0]:
-                top_score = score_list[0]
-                reduced_top_matrix = ga.get_reduced_matrix(matrix_list[0])
-                top_title = "top generation: %d, top score: %d/%d, %s" % (generation + 1, top_score, settings.full_score, ga.get_matrix_description(reduced_top_matrix))
-                set_data_func(ga.remove_empty_rows_from_matrix(2 * matrix_list[0] - reduced_top_matrix))
-            set_title_func("input: %s, population: %d, min/max: (%d, %d), current: %d, %s" % (input_file, population, min_score, max_score, generation + 1, top_title))
-            generation += 1
+# def do_evolve_generation(set_data_func, set_title_func):
+#     global input_file, population, generation, matrix_list, top_score, top_matrix, top_title
+#     global score_list
+#
+#     while True:
+#         do_evolve_once()
+#         # do_evolve_once_multi_thread()
+#         print_result_from_matrix_list()
+#         if set_data_func:
+#             if top_score < score_list[0]:
+#                 top_score = score_list[0]
+#                 top_matrix = matrix_list[0]
+#                 reduced_top_matrix = ga.get_reduced_matrix(top_matrix)
+#                 top_title = "top generation: %d, top score: %d/%d, %s" % (generation + 1, top_score, settings.full_score, ga.get_matrix_description(reduced_top_matrix))
+#                 set_data_func(ga.remove_empty_rows_from_matrix(2 * top_matrix - reduced_top_matrix))
+#             set_title_func("input: %s, population: %d, min/max: (%d, %d), current: %d, %s" % (input_file, population, min_score, max_score, generation + 1, top_title))
+#             generation += 1
 
 
 class Data(object):
-    def __init__(self, _input_file, _population, _generation, _matrix_list, _top_score, _top_title):
+    def __init__(self, _input_file, _population, _generation, _matrix_list, _top_score, _top_matrix, _top_title):
         self.input_file = _input_file
         self.population = _population
         self.generation = _generation
         self.matrix_list = _matrix_list
         self.top_score = _top_score
+        self.top_matrix = _top_matrix
         self.top_title = _top_title
 
 
 def save_session():
-    data = Data(input_file, population, generation, matrix_list, top_score, top_title)
+    data = Data(input_file, population, generation, matrix_list, top_score, top_matrix, top_title)
     return data
 
 
 def load_session(data):
-    global input_file, population, generation, matrix_list, top_score, top_title
+    global input_file, population, generation, matrix_list, top_score, top_matrix, top_title
     global population_limit
+
     input_file = data.input_file
     population = data.population
     generation = data.generation
     matrix_list = data.matrix_list
     top_score = data.top_score
+    top_matrix = data.top_matrix
     top_title = data.top_title
 
     population_limit = int((1 + crossover_ratio / 2) * population)
 
 
 def show_session(set_data_func, set_title_func):
-    global input_file, generation, matrix_list, score_list, top_score, top_title
+    global input_file, population, generation, matrix_list, top_score, top_matrix, top_title
+    global score_list
 
     print_result_from_matrix_list()
-    if set_data_func and top_score < score_list[0]:
-        top_score = score_list[0]
-        top_title = "top generation: %d, top score: %d, %s" % (i + 1, top_score, ga.get_matrix_description(matrix_list[0]))
-        self.set_data_func(ga.remove_empty_rows_from_matrix(matrix_list[0]))
-    set_title_func("input: %s, population: %d, current: %d/%d, %s" % (input_file, population, i + 1, generation_count, top_title))
+    reduced_top_matrix = ga.get_reduced_matrix(top_matrix)
+    set_data_func(ga.remove_empty_rows_from_matrix(2 * top_matrix - reduced_top_matrix))
+    set_title_func("input: %s, population: %d, min/max: (%d, %d), current: %d, %s" % (input_file, population, min_score, max_score, generation + 1, top_title))
+    generation += 1
 
 
 class MyThread(threading.Thread):
@@ -289,23 +294,26 @@ class MyThread(threading.Thread):
         do_init_generation()
 
     def run(self):
-        global input_file, generation, matrix_list, score_list, top_score, top_title
+        global input_file, population, generation, matrix_list, top_score, top_matrix, top_title
+        global score_list
 
         while True:
             if self.stopped:
+                generation -= 1
                 break
             else:
                 do_evolve_once()
                 # do_evolve_once_multi_thread()
+
                 print_result_from_matrix_list()
-                if self.set_data_func:
-                    if top_score < score_list[0]:
-                        top_score = score_list[0]
-                        reduced_top_matrix = ga.get_reduced_matrix(matrix_list[0])
-                        top_title = "top generation: %d, top score: %d/%d, %s" % (generation + 1, top_score, settings.full_score, ga.get_matrix_description(reduced_top_matrix))
-                        self.set_data_func(ga.remove_empty_rows_from_matrix(2 * matrix_list[0] - reduced_top_matrix))
-                    self.set_title_func("input: %s, population: %d, min/max: (%d, %d), current: %d, %s" % (input_file, population, min_score, max_score, generation + 1, top_title))
-                    generation += 1
+                if top_score < score_list[0]:
+                    top_score = score_list[0]
+                    top_matrix = matrix_list[0]
+                    reduced_top_matrix = ga.get_reduced_matrix(top_matrix)
+                    top_title = "top generation: %d, top score: %d/%d, %s" % (generation + 1, top_score, settings.full_score, ga.get_matrix_description(reduced_top_matrix))
+                    self.set_data_func(ga.remove_empty_rows_from_matrix(2 * top_matrix - reduced_top_matrix))
+                self.set_title_func("input: %s, population: %d, min/max: (%d, %d), current: %d, %s" % (input_file, population, min_score, max_score, generation + 1, top_title))
+                generation += 1
 
 
 if __name__ == '__main__':
@@ -313,4 +321,4 @@ if __name__ == '__main__':
     do_demo()
 
     do_init_generation()
-    do_evolve_generation(None, None)
+    # do_evolve_generation(None, None)
