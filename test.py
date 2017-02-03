@@ -69,10 +69,17 @@ def init_from_test():
 
             settings.case_list.append(line)
 
-        elif line.startswith("2"):
-            tmp_list = line.strip("\n").split('\t')
-            method = tmp_list[1]
-            path = tmp_list[2]
+        else:
+            if line.startswith("2"):
+                tmp_list = line.strip("\n").split('\t')
+                method = tmp_list[1]
+                path = tmp_list[2]
+            else:
+                continue
+            # else:
+            #     tmp_list = line.strip("\n").split('|')
+            #     method = tmp_list[0].strip(' ')
+            #     path = tmp_list[1].strip(' ')
 
             # print method + " | " + path
 
@@ -86,7 +93,9 @@ def init_from_test():
             path = path.replace("5000", "KEYSTONE")
 
             path = path.replace("NOVA/v2.1/", "")
-            path = path.replace("GLANCE/v1/", "")
+            path = path.replace("GLANCE/", "")
+            path = path.replace("CINDER/v1/", "")
+            path = path.replace("CINDER/v2/", "")
 
             path = path.replace("/detail", "")
 
@@ -98,6 +107,8 @@ def init_from_test():
             path = regex_id.sub("%NAME%", path)
             path = regex_name.sub("\\1%NAME%", path)
 
+            if path.startswith("%NAME%/"):
+                path = path[6:]
             path = path.strip("/")
 
             # print method + " | " + path
