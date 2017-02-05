@@ -40,6 +40,28 @@ def init_from_test():
 
         # Cinder
         "extra_specs",
+
+        # Kubernetes
+        "namespaces",
+        "pods",
+        "jobs",
+        "events",
+        "persistentvolumeclaims",
+        "persistentvolumes",
+        "replicationcontrollers",
+        "nodes",
+        "services",
+        "secrets",
+        "foo",
+        "bindings",
+        "clusterrolebindings",
+        "extensions",
+        "watch",
+        "certificates",
+        "policy",
+        "clusterroles",
+        "rbac.authorization.k8s.io",
+        "apps",
     ]
 
     pattern_name = "("
@@ -70,7 +92,12 @@ def init_from_test():
             settings.case_list.append(line)
 
         else:
-            if line.startswith("2"):
+            if line == "\n":
+                continue
+
+            if settings.filename == "k8s-vectors-new.txt":
+                method, path = line.strip("\n").split(',')
+            elif line.startswith("2"):
                 tmp_list = line.strip("\n").split('\t')
                 method = tmp_list[1]
                 path = tmp_list[2]
@@ -83,7 +110,8 @@ def init_from_test():
 
             # print method + " | " + path
 
-            path = path[path.find("128:") + 4:]
+            if path.find("128:") != -1:
+                path = path[path.find("128:") + 4:]
             path = path.replace("8774", "NOVA")
             path = path.replace("9696", "NEUTRON")
             path = path.replace("9292", "GLANCE")
@@ -98,6 +126,8 @@ def init_from_test():
             path = path.replace("CINDER/v2/", "")
 
             path = path.replace("/detail", "")
+
+            path = path.replace("/api/v1/", "")
 
             question_mark = path.find("?")
             if question_mark != -1:
@@ -120,6 +150,12 @@ def init_from_test():
                 settings.test_dict[current_line][method_path_to_string(method, path)] += 1
 
             settings.api_list.append(method_path_to_string(method, path))
+
+    case_list = []
+    for case in settings.case_list:
+        if settings.test_dict.has_key(case):
+            case_list.append(case)
+    settings.case_list = case_list
 
 
 def init_lists():
