@@ -474,8 +474,8 @@ if __name__ == "__main__":
     else:
         # thread = threading.Thread(target=do_compute)
         thread = main.MyThread(set_data, set_title)
+        thread.init_random_data()
     thread.setDaemon(True)
-    thread.init_random_data()
     thread.start()
     # do_compute()
     end_gui()
