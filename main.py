@@ -276,7 +276,6 @@ def show_session(set_data_func, set_title_func):
     reduced_top_matrix = ga.get_reduced_matrix(top_matrix)
     set_data_func(ga.remove_empty_rows_from_matrix(2 * top_matrix - reduced_top_matrix))
     set_title_func("input: %s, population: %d, min/max: (%d, %d), current: %d, %s" % (input_file, population, min_score, max_score, generation + 1, top_title))
-    generation += 1
 
 
 class MyThread(threading.Thread):
@@ -313,7 +312,6 @@ class MyThread(threading.Thread):
                     top_title = "top generation: %d, top score: %d/%d, %s" % (generation + 1, top_score, settings.full_score, ga.get_matrix_description(reduced_top_matrix))
                     self.set_data_func(ga.remove_empty_rows_from_matrix(2 * top_matrix - reduced_top_matrix))
                 self.set_title_func("input: %s, population: %d, min/max: (%d, %d), current: %d, %s" % (input_file, population, min_score, max_score, generation + 1, top_title))
-                generation += 1
 
 
 if __name__ == '__main__':
