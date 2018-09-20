@@ -1,0 +1,17 @@
+*****************************************************
+case list:
+0: admin_deactivate_reactivate_image
+
+*****************************************************
+API list:
+0: images | POST
+1: images/%NAME% | DELETE
+2: images/%NAME% | GET
+3: images/%NAME%/actions/deactivate | POST
+4: images/%NAME%/actions/reactivate | POST
+5: images/%NAME%/file | GET
+6: images/%NAME%/file | PUT
+
+*****************************************************
+case number = 1
+API number = 7

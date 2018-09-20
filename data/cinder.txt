@@ -1,0 +1,88 @@
+*****************************************************
+case list:
+0: create_with_nonexistent_volume_type
+1: volume_force_delete_when_volume_is_attaching, volume_force_delete_when_volume_is_creating, volume_force_delete_when_volume_is_error
+2: update_multiple_extra_spec, update_no_body, update_none_extra_spec_id
+3: get_nonexistent_extra_spec_id, get_nonexistent_volume_type_id
+4: delete_nonexistent_volume_type_id
+5: create_invalid_body, create_none_body, create_nonexistent_type_id
+6: volume_type_extra_spec_create_get_delete
+7: list_nonexistent_volume_type_id
+8: volume_type_extra_specs_list
+9: delete_nonexistent_type_id
+10: create_with_empty_name
+11: volume_crud_with_volume_type_and_extra_specs
+12: volume_type_encryption_create_get_delete
+13: volume_type_create_get_delete
+14: reset_snapshot_status
+15: napshot_force_delete_when_snapshot_is_creating, napshot_force_delete_when_snapshot_is_deleting, napshot_force_delete_when_snapshot_is_error, napshot_force_delete_when_snapshot_is_error_deleting
+16: get_pools_with_details
+17: associate_disassociate_qos
+18: get_qos
+19: volume_reset_status
+20: get_nonexistent_type_id
+21: update_nonexistent_extra_spec_id
+22: volume_type_extra_specs_update
+23: volume_type_list
+24: update_snapshot_status
+25: get_pools_without_details
+26: create_test_qos_specs
+27: unset_qos_key
+28: list_qos
+29: create_delete_qos_with_back_end_consumer, create_delete_qos_with_both_consumer, create_delete_qos_with_front_end_consumer
+30: get_service_by_host_name, get_service_by_service_and_host_name, get_service_by_service_binary_name
+31: list_default_quotas
+32: quota_volume_gigabytes
+33: quota_volume_gigabytes_snapshots
+34: quota_volume_snapshots
+35: quota_volumes
+36: list_services
+37: update_all_quota_resources_for_tenant
+38: how_quota_usage, list_quotas
+39: quota_usage
+40: delete_quota
+41: list_hosts
+
+*****************************************************
+API list:
+0: os-hosts | GET
+1: os-quota-sets/%NAME% | DELETE
+2: os-quota-sets/%NAME% | GET
+3: os-quota-sets/%NAME% | PUT
+4: os-quota-sets/%NAME%/defaults | GET
+5: os-services | GET
+6: qos-specs | GET
+7: qos-specs | POST
+8: qos-specs/%UUID% | DELETE
+9: qos-specs/%UUID% | GET
+10: qos-specs/%UUID% | PUT
+11: qos-specs/%UUID%/associate | GET
+12: qos-specs/%UUID%/associations | GET
+13: qos-specs/%UUID%/delete_keys | PUT
+14: qos-specs/%UUID%/disassociate | GET
+15: qos-specs/%UUID%/disassociate_all | GET
+16: scheduler-stats/get_pools | GET
+17: snapshots | POST
+18: snapshots/%UUID% | DELETE
+19: snapshots/%UUID% | GET
+20: snapshots/%UUID%/action | POST
+21: types | GET
+22: types | POST
+23: types/%UUID% | DELETE
+24: types/%UUID% | GET
+25: types/%UUID%/encryption | GET
+26: types/%UUID%/encryption | POST
+27: types/%UUID%/encryption/provider | DELETE
+28: types/%UUID%/extra_specs | GET
+29: types/%UUID%/extra_specs | POST
+30: types/%UUID%/extra_specs/%NAME% | DELETE
+31: types/%UUID%/extra_specs/%NAME% | GET
+32: types/%UUID%/extra_specs/%NAME% | PUT
+33: volumes | POST
+34: volumes/%UUID% | DELETE
+35: volumes/%UUID% | GET
+36: volumes/%UUID%/action | POST
+
+*****************************************************
+case number = 42
+API number = 37
